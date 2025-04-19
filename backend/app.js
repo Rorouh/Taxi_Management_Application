@@ -10,6 +10,16 @@ const api = require('./routes/api');
 
 var app = express();
 
+const mongoose = require('mongoose');
+const mongo = "mongodb+srv://alejandroldz2004:VT2Joeb4EcBTTpll@cluster0.c4mfrko.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+mongoose.connect(mongo)
+.then(() => {
+  console.log('Connected to MongoDB');
+})
+.catch((error) => {
+  console.error('Error connecting to MongoDB:', error);
+});
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');

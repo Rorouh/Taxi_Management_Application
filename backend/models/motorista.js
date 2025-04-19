@@ -8,7 +8,13 @@ const motoristaSchema = new Schema({
     genero: { type: String, enum: ['masculino', 'feminino'], required: true },
     anoDeNascimento: { type: Number, required: true},
     cartaDeConducao: { type: String, required: true, unique: true },
-    morada: { type: Schema.Types.ObjectId, ref: 'morada', required: true },
+    morada: { 
+        rua: { type: String, required: true },
+        numeroDaPorta: { type: String, required: true },
+        codigoPostal: { type: String, required: true },
+        localidade: { type: String, required: true }
+     },
+    criado: { type: Date, default: Date.now }
 });
 
 module.exports = mongoose.model('motorista', motoristaSchema);
