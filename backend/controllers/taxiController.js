@@ -7,18 +7,19 @@ function validarMatricula(matricula) {
 exports.createTaxi = async (req, res) => {
     try {
         const { matricula, anoDeCompra, marca, modelo, nivelDeConforto } = req.body;
-        if(!validarMatricula(matricula)){
+        const newMatricula = matricula.toUpperCase();
+        if(!validarMatricula(newMatricula)){
             return res.status(400).json({ error: 'Matricula inválida' });
         }
         const anoActual = new Date().getFullYear();
         if (anoDeCompra > anoActual) {
             return res.status(400).json({ error: 'Ano de compra inválido' });
         }
-        if (nivelDeConforto != 'básico' && nivelDeConforto != 'luxuoso') {
+        if (nivelDeConforto != 'basico' && nivelDeConforto != 'luxuoso') {
             return res.status(400).json({ error: 'Nivel de conforto inválido' });
         }
-        matricula = matricula.toUpperCase();
-        const taxi = new Taxi({ matricula, anoDeCompra, marca, modelo, nivelDeConforto });
+        
+        const taxi = new Taxi({ matricula: newMatricula , anoDeCompra, marca, modelo, nivelDeConforto });
         await taxi.save();
         res.status(201).json(taxi);
     } catch (error) {
@@ -34,4 +35,6 @@ exports.getTaxis = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
+
 

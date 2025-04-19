@@ -1,7 +1,7 @@
 const Motorista = require('../models/motorista');
 const cp = require('../data/codigos_postais.json');
 
-const createMotorista = async (req, res) => {
+exports.createMotorista = async (req, res) => {
     try {
         const { nif, nome, genero, anoDeNascimento, cartaDeConducao, morada } = req.body;
         
@@ -26,7 +26,7 @@ const createMotorista = async (req, res) => {
     }
 }
 
-const getMotoristas = async (req, res) => {
+exports.getMotoristas = async (req, res) => {
     try {
         const motoristas = await Motorista.find().sort({ criado: -1 });
         res.status(200).json(motoristas);
@@ -34,5 +34,3 @@ const getMotoristas = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 }
-
-module.exports = { createMotorista, getMotoristas };

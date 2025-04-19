@@ -1,0 +1,39 @@
+<h2>Registrar Taxi</h2>
+
+<form (ngSubmit)="onSubmit()">
+    <div>
+        <label>Matricula:</label>
+        <input type="text" name="matricula" [(ngModel)]="taxi.matricula">
+    </div>
+    <div>
+        <label>Ano de compra:</label>
+        <input type="number" name="anoDeCompra" [(ngModel)]="taxi.anoDeCompra">
+    </div>
+    <div>
+        <label>Marca:</label>
+        <select name="marca" [(ngModel)]="taxi.marca">
+            <option value="Renault">Renault</option>
+            <option value="Mercedes">Mercedes</option>
+            <option value="Toyota">Toyota</option>
+            <option value="Fiat">Fiat</option>
+            <option value="Peugeot">Peugeot</option>
+            <option value="Nissan">Nissan</option>
+            <option value="Chevrolet">Chevrolet</option>
+            <option value="Honda">Honda</option>
+            <option value="Mazda">Mazda</option>
+        </select>
+    </div>
+    <div>
+        <label>Modelo:</label>
+        <input type="text" name="modelo" [(ngModel)]="taxi.modelo">
+    </div>
+    <div>
+        <label>Nivel de conforto:</label>
+        <select name="nivelDeConforto" [(ngModel)]="taxi.nivelDeConforto">
+            <option value="basico">Basico</option>
+            <option value="luxuoso">Luxuoso</option>
+        </select>
+    </div>
+    <button type="submit">Registrar</button>
+</form>
+

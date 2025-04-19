@@ -3,10 +3,6 @@ const router = express.Router();
 const taxiController = require('../controllers/taxiController');
 const motoristaController = require('../controllers/motoristaController');
 
-
-router.get('/', (req, res) => {
-    res.send('API de Táxis funcionando 🚕');
-  });
 //Taxi
 router.post('/taxi', taxiController.createTaxi);
 
