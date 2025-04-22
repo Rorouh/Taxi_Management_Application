@@ -68,15 +68,6 @@
         pattern="\d{4}-\d{3}"
       />
     </div>
-    <div>
-      <label>Localidad</label>
-      <input
-        name="localidad"
-        [(ngModel)]="conductor.direccion.localidad"
-        readonly
-        required
-      />
-    </div>
   </fieldset>
 
   <div>
@@ -92,3 +83,10 @@
     Registrar conductor
   </button>
 </form>
+
+<h2>Conductores Registrados</h2>
+<ul>
+    <li *ngFor="let c of conductores">
+        {{c.nif}}  {{c.nombre}}  {{c.genero}}  {{c.anoNacimiento}}  {{c.direccion.calle}}  {{c.direccion.numero}}  {{c.direccion.codigoPostal}} {{c.direccion.localidad}} {{c.licencia}}
+    </li>
+</ul>

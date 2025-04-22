@@ -41,14 +41,19 @@ export class ConductorComponent {
     licencia: ''
   };
 
+  conductores : Conductor[] = [];
   generos: Conductor['genero'][] = ['femenino', 'masculino'];
 
   constructor(private conductorService: ConductorService) {}
 
+  ngOnInit() {
+    this.cargarConductores();
+  }
   onSubmit() {
     this.conductorService.crearConductor(this.conductor).subscribe({
       next: () => {
         alert('Conductor creado!');
+        this.cargarConductores();
         this.resetForm();
       },
       error: (err) => {
@@ -57,6 +62,12 @@ export class ConductorComponent {
     });
   }
 
+  cargarConductores() {
+    this.conductorService.obtenerConductores().subscribe({
+      next: (data) => this.conductores = data,
+      error: (error) => alert('Error al cargar conductores: ' + error.message)
+    });
+  }
   private resetForm() {
     this.conductor = {
       nif: '',

@@ -3,20 +3,20 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Precio {
-  nivelConfort: 'básico' | 'lujoso';
+  nivelConfort: 'basico' | 'lujoso';
   precioMinuto: number;
   incrementoNocturno: number;   // 0.2 -> 20%
 }
 
 export interface Simulacion {
-  nivelConfort: 'básico' | 'lujoso';
+  nivelConfort: 'basico' | 'lujoso';
   inicio: string;  // la fecha en formato ISO
   fin:    string;  // la fecha en formato ISO
 }
 
 @Injectable({ providedIn: 'root' })
 export class PrecioService {
-  private api = '/api/precios';
+  private api = 'http://localhost:3000/precios';
 
   constructor(private http: HttpClient) {}
 

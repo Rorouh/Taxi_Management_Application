@@ -18,11 +18,15 @@ export interface Conductor {
 
 @Injectable({ providedIn: 'root' })
 export class ConductorService {
-  private api = '/api/conductores';
+  private url = 'http://localhost:3000/conductor';
 
   constructor(private http: HttpClient) {}
 
   crearConductor(data: Conductor): Observable<Conductor> {
-    return this.http.post<Conductor>(`${this.api}/registro`, data);
+    return this.http.post<Conductor>(this.url, data);
+  }
+
+  obtenerConductores(): Observable<Conductor[]> {
+    return this.http.get<Conductor[]>(this.url);
   }
 }

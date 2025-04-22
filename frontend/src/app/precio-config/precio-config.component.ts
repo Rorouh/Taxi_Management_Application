@@ -10,20 +10,20 @@ import { PrecioService, Precio, Simulacion } from '../services/precio.service';
 export class PrecioConfigComponent implements OnInit {
   // 1) Objeto tipado para crear/actualizar precio, con valores iniciales válidos
   precio: Precio = {
-    nivelConfort: 'básico',      // uno de los literales permitidos
+    nivelConfort: 'basico',      // uno de los literales permitidos
     precioMinuto: 0,             // no puede ser null
     incrementoNocturno: 0        // no puede ser null
   };
 
   // 2) Objeto tipado para simular coste, con nivel inicial válido
   simulacion: Simulacion = {
-    nivelConfort: 'básico',
+    nivelConfort: 'basico',
     inicio: '',
     fin: ''
   };
 
   // 3) Tipado de los niveles de confort según la interfaz Precio
-  niveles: Precio['nivelConfort'][] = ['básico', 'lujoso'];
+  niveles: Precio['nivelConfort'][] = ['basico', 'lujoso'];
 
   preciosExistentes: Precio[] = [];
   resultado: number | null = null;

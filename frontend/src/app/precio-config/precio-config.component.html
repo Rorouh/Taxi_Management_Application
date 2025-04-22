@@ -6,7 +6,7 @@
     required
     [(ngModel)]="precio.nivelConfort"
   >
-    <option *ngFor="let n of niveles" [value]="n">{{ n }}</option>
+    <option *ngFor="let n of niveles" [value]="n" >{{ n.toUpperCase() }}</option>
   </select>
 
   <label>Precio por minuto (€)</label>
@@ -39,7 +39,7 @@
 <h3>Precios definidos</h3>
 <ul>
   <li *ngFor="let p of preciosExistentes">
-    {{ p.nivelConfort }} →
+    {{ p.nivelConfort.toUpperCase() }} →
     {{ p.precioMinuto | currency }}
     (+{{ (p.incrementoNocturno * 100) | number:'1.0-0' }}%)
   </li>
@@ -55,7 +55,7 @@
     required
     [(ngModel)]="simulacion.nivelConfort"
   >
-    <option *ngFor="let n of niveles" [value]="n">{{ n }}</option>
+    <option *ngFor="let n of niveles" [value]="n">{{ n.toUpperCase() }}</option>
   </select>
 
   <label>Inicio</label>

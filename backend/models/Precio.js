@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const precioSchema = new mongoose.Schema({
   nivelConfort: {
     type: String,
-    enum: ['básico','lujoso'],
+    enum: ['basico','lujoso'],
     required: true,
     unique: true
   },

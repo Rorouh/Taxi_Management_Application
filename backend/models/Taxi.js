@@ -4,8 +4,9 @@ const taxiSchema = new mongoose.Schema({
   matricula: {
     type: String,
     required: true,
+    unique: true,
     validate: {
-      validator: v => /[A-Za-z]/.test(v) && /\d/.test(v),
+      validator: v => /^[A-Z]{2}-\d{2}-[A-Z]{2}$/.test(v),
       message: props => `${props.value} no es una matrícula válida`
     }
   },
@@ -16,7 +17,7 @@ const taxiSchema = new mongoose.Schema({
   },
   marca:          { type: String, required: true },
   modelo:         { type: String, required: true },
-  nivelConforto:  { type: String, enum: ['básico','lujoso'], required: true },
+  nivelConfort:  { type: String, enum: ['basico','lujoso'], required: true },
   createdAt:      { type: Date, default: Date.now }
 });
 

@@ -4,7 +4,8 @@ const conductorSchema = new mongoose.Schema({
   nif: {
     type: String,
     required: true,
-    match: [/^\d{9}$/, 'El NIF debe tener 9 dígitos']
+    match: [/^\d{9}$/, 'El NIF debe tener 9 dígitos'],
+    unique: true
   },
   nombre:        { type: String, required: true },
   genero:        { type: String, enum: ['femenino','masculino'], required: true },
@@ -17,12 +18,12 @@ const conductorSchema = new mongoose.Schema({
     }
   },
   direccion: {
-    calle:        String,
-    numero:       String,
-    codigoPostal: String,
-    localidad:    String
+    calle: { type: String, required: true },
+    numero: { type: String, required: true },
+    codigoPostal: { type: String, required: true },
+    localidad: { type: String}
   },
-  licencia:      { type: String, required: true },
+  licencia:      { type: String, required: true, unique: true },
   createdAt:     { type: Date, default: Date.now }
 });
 

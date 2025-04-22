@@ -1,17 +1,85 @@
+h2 {
+  font-size: 1.5rem;
+  margin: 2rem auto 1rem;
+  text-align: center;
+  color: #333;
+}
+
+h3 {
+  font-size: 1.2rem;
+  margin-top: 2rem;
+  color: #444;
+  text-align: center;
+}
+
 form {
-    max-width: 600px;
-    margin-bottom: 2rem;
-  }
-  label {
-    display: block;
-    margin-top: 1rem;
-  }
-  input, select {
-    width: 100%;
-    padding: .5rem;
-    box-sizing: border-box;
-  }
-  button {
-    margin-top: 1rem;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+  margin: 1.5rem auto;
+  padding: 1.5rem;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  gap: 1rem;
+}
+
+label {
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+  color: #333;
+}
+
+input,
+select {
+  width: 100%;
+  padding: 0.6rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  transition: border-color 0.2s;
+}
+
+input:focus,
+select:focus {
+  border-color: #4CAF50;
+  outline: none;
+}
+
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+button:hover{
+  background-color: #45a049;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+  max-width: 500px;
+  margin: 1rem auto;
+  text-align: center;
+}
+
+li {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+  font-size: 1rem;
+  color: #444;
+}
+
+div h3 {
+  color: #2e7d32;
+  margin-top: 1rem;
+}
+
+

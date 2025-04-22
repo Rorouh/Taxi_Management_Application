@@ -7,7 +7,7 @@
     </div>
     <div>
         <label>Ano de compra:</label>
-        <input type="number" name="anoDeCompra" [(ngModel)]="taxi.anoDeCompra">
+        <input type="number" name="anoCompra" [(ngModel)]="taxi.anoCompra">
     </div>
     <div>
         <label>Marca:</label>
@@ -21,6 +21,8 @@
             <option value="Chevrolet">Chevrolet</option>
             <option value="Honda">Honda</option>
             <option value="Mazda">Mazda</option>
+            <option value="Suzuki">Suzuki</option>
+            <option value="Kia">Kia</option>
         </select>
     </div>
     <div>
@@ -28,12 +30,19 @@
         <input type="text" name="modelo" [(ngModel)]="taxi.modelo">
     </div>
     <div>
-        <label>Nivel de conforto:</label>
-        <select name="nivelDeConforto" [(ngModel)]="taxi.nivelDeConforto">
+        <label>Nivel de confort:</label>
+        <select name="nivelConfort" [(ngModel)]="taxi.nivelConfort">
             <option value="basico">Basico</option>
-            <option value="luxuoso">Luxuoso</option>
+            <option value="lujoso">Lujoso</option>
         </select>
     </div>
     <button type="submit">Registrar</button>
 </form>
+
+<h2>Taxis Registrados</h2>
+<ul>
+    <li *ngFor="let taxi of taxis">
+        {{taxi.matricula}}  {{taxi.marca}}  {{taxi.modelo}}  {{taxi.anoCompra}}  {{taxi.nivelConfort}}
+    </li>
+</ul>
 

@@ -18,8 +18,17 @@
   .card h2 {
     margin-top: 0;
   }
-  .card button {
-    margin-top: 1rem;
-    padding: 0.5rem 1rem;
+  button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
   }
+  
+  button:hover {
+    background-color: #45a049;
+  }
+
   
