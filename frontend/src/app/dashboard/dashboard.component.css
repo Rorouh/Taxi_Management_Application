@@ -1,0 +1,25 @@
+.dashboard-container {
+    max-width: 960px;
+    margin: auto;
+    text-align: center;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+  }
+  .card {
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  .card h2 {
+    margin-top: 0;
+  }
+  .card button {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+  }
+  

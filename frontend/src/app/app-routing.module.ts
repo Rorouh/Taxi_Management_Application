@@ -11,7 +11,7 @@ const routes: Routes = [
   { path: 'dashboard',  component: DashboardComponent },
   { path: 'taxi',       component: TaxiComponent },
   { path: 'conductor',  component: ConductorComponent },
-  { path: 'precio',     component: PrecioConfigComponent },  // << nueva ruta
+  { path: 'precio',     component: PrecioConfigComponent },  // << nue
   { path: '**',         redirectTo: 'dashboard' }
 ];
 

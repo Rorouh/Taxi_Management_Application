@@ -1,16 +1,13 @@
 const express = require('express');
-const router = express.Router();
-const taxiController = require('../controllers/taxiController');
-const motoristaController = require('../controllers/motoristaController');
+const router  = express.Router();
 
-//Taxi
-router.post('/taxi', taxiController.createTaxi);
+// importa los routers correctos
+const taxiRouter      = require('./taxiRoutes');
+const conductorRouter = require('./conductorRoutes');
+const precioRouter    = require('./precioRoutes');
 
-router.get('/taxi', taxiController.getTaxis);
-
-//Motoristas
-router.post('/motorista', motoristaController.createMotorista);
-
-router.get('/motorista', motoristaController.getMotoristas);
+router.use('/taxis',      taxiRouter);
+router.use('/conductores',conductorRouter);
+router.use('/precios',    precioRouter);
 
 module.exports = router;
