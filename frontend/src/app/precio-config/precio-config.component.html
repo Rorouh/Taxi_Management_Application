@@ -1,0 +1,84 @@
+<h2>Configuración de precios</h2>
+<form (ngSubmit)="guardarPrecio()" #fp="ngForm">
+  <label>Nivel de confort</label>
+  <select
+    name="nivelConfort"
+    required
+    [(ngModel)]="precio.nivelConfort"
+  >
+    <option *ngFor="let n of niveles" [value]="n">{{ n }}</option>
+  </select>
+
+  <label>Precio por minuto (€)</label>
+  <input
+    type="number"
+    name="precioMinuto"
+    required
+    min="0.01"
+    step="0.01"
+    [(ngModel)]="precio.precioMinuto"
+  />
+
+  <label>Incremento nocturno (%)</label>
+  <input
+    type="number"
+    name="incrementoNocturno"
+    required
+    min="0"
+    step="0.01"
+    [(ngModel)]="precio.incrementoNocturno"
+  />
+
+  <button type="submit" [disabled]="fp.invalid">
+    Guardar precio
+  </button>
+</form>
+
+<hr />
+
+<h3>Precios definidos</h3>
+<ul>
+  <li *ngFor="let p of preciosExistentes">
+    {{ p.nivelConfort }} →
+    {{ p.precioMinuto | currency }}
+    (+{{ (p.incrementoNocturno * 100) | number:'1.0-0' }}%)
+  </li>
+</ul>
+
+<hr />
+
+<h2>Simulador de coste</h2>
+<form (ngSubmit)="simularCoste()" #fs="ngForm">
+  <label>Nivel de confort</label>
+  <select
+    name="nivelConfort"
+    required
+    [(ngModel)]="simulacion.nivelConfort"
+  >
+    <option *ngFor="let n of niveles" [value]="n">{{ n }}</option>
+  </select>
+
+  <label>Inicio</label>
+  <input
+    type="datetime-local"
+    name="inicio"
+    required
+    [(ngModel)]="simulacion.inicio"
+  />
+
+  <label>Fin</label>
+  <input
+    type="datetime-local"
+    name="fin"
+    required
+    [(ngModel)]="simulacion.fin"
+  />
+
+  <button type="submit" [disabled]="fs.invalid">
+    Calcular coste
+  </button>
+</form>
+
+<div *ngIf="resultado !== null">
+  <h3>Coste estimado: {{ resultado | currency }}</h3>
+</div>

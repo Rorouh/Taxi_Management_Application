@@ -1,0 +1,94 @@
+<form (ngSubmit)="onSubmit()" #f="ngForm">
+  <div>
+    <label>NIF</label>
+    <input
+      name="nif"
+      [(ngModel)]="conductor.nif"
+      required
+      pattern="\d{9}"
+    />
+  </div>
+
+  <div>
+    <label>Nombre</label>
+    <input
+      name="nombre"
+      [(ngModel)]="conductor.nombre"
+      required
+    />
+  </div>
+
+  <div>
+    <label>Género</label>
+    <select
+      name="genero"
+      [(ngModel)]="conductor.genero"
+      required
+    >
+      <option *ngFor="let g of generos" [value]="g">{{ g }}</option>
+    </select>
+  </div>
+
+  <div>
+    <label>Año de nacimiento</label>
+    <input
+      type="number"
+      name="anoNacimiento"
+      [(ngModel)]="conductor.anoNacimiento"
+      required
+      [min]="minYear"
+      [max]="maxYear"
+    />
+  </div>
+
+  <fieldset>
+    <legend>Dirección</legend>
+    <div>
+      <label>Calle</label>
+      <input
+        name="calle"
+        [(ngModel)]="conductor.direccion.calle"
+        required
+      />
+    </div>
+    <div>
+      <label>Número</label>
+      <input
+        name="numero"
+        [(ngModel)]="conductor.direccion.numero"
+        required
+      />
+    </div>
+    <div>
+      <label>Código Postal</label>
+      <input
+        name="codigoPostal"
+        [(ngModel)]="conductor.direccion.codigoPostal"
+        required
+        pattern="\d{4}-\d{3}"
+      />
+    </div>
+    <div>
+      <label>Localidad</label>
+      <input
+        name="localidad"
+        [(ngModel)]="conductor.direccion.localidad"
+        readonly
+        required
+      />
+    </div>
+  </fieldset>
+
+  <div>
+    <label>Licencia</label>
+    <input
+      name="licencia"
+      [(ngModel)]="conductor.licencia"
+      required
+    />
+  </div>
+
+  <button type="submit" [disabled]="f.invalid">
+    Registrar conductor
+  </button>
+</form>
