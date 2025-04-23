@@ -41,7 +41,7 @@
   <li *ngFor="let p of preciosExistentes">
     {{ p.nivelConfort.toUpperCase() }} →
     {{ p.precioMinuto | currency }}
-    (+{{ (p.incrementoNocturno * 100) | number:'1.0-0' }}%)
+    (+{{ (p.incrementoNocturno) | number:'1.0-0' }}%)
   </li>
 </ul>
 
