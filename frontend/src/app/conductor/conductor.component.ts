@@ -57,7 +57,7 @@ export class ConductorComponent {
         this.resetForm();
       },
       error: (err) => {
-        alert('Error: ' + err.message);
+        alert('Campos incorrectos');
       }
     });
   }
@@ -65,7 +65,7 @@ export class ConductorComponent {
   cargarConductores() {
     this.conductorService.obtenerConductores().subscribe({
       next: (data) => this.conductores = data,
-      error: (error) => alert('Error al cargar conductores: ' + error.message)
+      error: (error) => alert('Error al cargar conductores')
     });
   }
   private resetForm() {

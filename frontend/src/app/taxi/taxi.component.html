@@ -12,22 +12,14 @@
     <div>
         <label>Marca:</label>
         <select name="marca" [(ngModel)]="taxi.marca">
-            <option value="Renault">Renault</option>
-            <option value="Mercedes">Mercedes</option>
-            <option value="Toyota">Toyota</option>
-            <option value="Fiat">Fiat</option>
-            <option value="Peugeot">Peugeot</option>
-            <option value="Nissan">Nissan</option>
-            <option value="Chevrolet">Chevrolet</option>
-            <option value="Honda">Honda</option>
-            <option value="Mazda">Mazda</option>
-            <option value="Suzuki">Suzuki</option>
-            <option value="Kia">Kia</option>
+            <option *ngFor="let marca of lista_marcas" [value]="marca">{{marca}}</option>
         </select>
     </div>
     <div>
         <label>Modelo:</label>
-        <input type="text" name="modelo" [(ngModel)]="taxi.modelo">
+        <select name="modelo" [(ngModel)]="taxi.modelo" >
+            <option *ngFor="let modelo of modelos_por_marca" [value]="modelo">{{modelo}}</option>
+        </select>
     </div>
     <div>
         <label>Nivel de confort:</label>
