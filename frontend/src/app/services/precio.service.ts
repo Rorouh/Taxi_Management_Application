@@ -31,4 +31,5 @@ export class PrecioService {
   simularCoste(data: Simulacion): Observable<{ coste: number }> {
     return this.http.post<{ coste: number }>(`${this.api}/simular`, data);
   }
+
 }
