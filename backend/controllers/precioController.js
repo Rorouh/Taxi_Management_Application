@@ -27,16 +27,15 @@ exports.getPrecios = async (req, res) => {
 
 exports.simularPrecio = async (req, res) => {
   try {
-    const { horaInicio, horaFin, nivelConfort } = req.body;
+    const { inicio, fin, nivelConfort } = req.body;
 
     const p = await Precio.findOne({ nivelConfort });
     
-    if (horaInicio > horaFin) {
-      return res.status(400).json({ error: 'La hora de inicio debe ser anterior a la hora de fin' });
-    }
+    const fechaInicial = new Date(inicio);
+    const fechaFinal= new Date(fin);
+    const minutos = Math.floor((fechaFinal - fechaInicial) / (1000 * 60));
 
-    const duracion = (horaFin - horaInicio) / 60;
-    const precioTotal = (p.precioMinuto * duracion)+ (p.precioMinuto * duracion * p.incrementoNocturno / 100);
+    const precioTotal = (p.precioMinuto * minutos)+ (p.precioMinuto * minutos * p.incrementoNocturno / 100);
     res.status(200).json(precioTotal);
   } catch (e) {
     res.status(400).json({ error: e.message });
