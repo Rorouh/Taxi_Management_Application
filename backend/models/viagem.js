@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Taxi = require('./Taxi');
 const precoPorMinuto = require('./Precio');
 const morada = require('./morada');
 
@@ -19,4 +18,4 @@ const viagemSchema = new Schema({
 
 });
 
-module.exports = mongoose.model('via', viagemSchema);
+module.exports = mongoose.model('viagem', viagemSchema);

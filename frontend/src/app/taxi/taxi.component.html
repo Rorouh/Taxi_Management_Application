@@ -1,34 +1,74 @@
 <h2>Registrar Taxi</h2>
 
-<form (ngSubmit)="onSubmit()">
+<form #f="ngForm" (ngSubmit)="onSubmit()" >
     <div>
+        <label class="error" *ngIf="matricula.invalid && formEnviado && mensaje != 'Matricula ya existente'">Matricula no valida</label>
+        <label class="error" *ngIf="mensaje == 'Matricula ya existente'">{{mensaje}}</label>
         <label>Matricula:</label>
-        <input type="text" name="matricula" [(ngModel)]="taxi.matricula">
+        <input 
+        type="text" 
+        name="matricula" 
+        [(ngModel)]="taxi.matricula" 
+        required
+        pattern="[A-Z]{2}-\d{2}-[A-Z]{2}"
+        #matricula="ngModel">
+
     </div>
     <div>
+        <label class="error" *ngIf="anoCompra.invalid && formEnviado">Año de compra no valido</label>
         <label>Ano de compra:</label>
-        <input type="number" name="anoCompra" [(ngModel)]="taxi.anoCompra">
+        <input 
+            type="number" 
+            name="anoCompra" 
+            [(ngModel)]="taxi.anoCompra" 
+            required
+            min="1900"
+            max={{maxAnoCompra}}
+            #anoCompra="ngModel"
+        />
     </div>
     <div>
+        <label class="error" *ngIf="marca.invalid && formEnviado">Introduzca una marca</label>
         <label>Marca:</label>
-        <select name="marca" [(ngModel)]="taxi.marca">
-            <option *ngFor="let marca of lista_marcas" [value]="marca">{{marca}}</option>
+        <select 
+            name="marca" 
+            [(ngModel)]="taxi.marca" 
+            (change)="cambiarMarca()" 
+            required
+            #marca="ngModel"
+        >
+            <option *ngFor="let marca of lista_marcas" [value]="marca">{{ marca }}</option>
         </select>
-    </div>
-    <div>
+      </div>
+      
+      <div>
+        <label class="error" *ngIf="modelo.invalid && formEnviado">Introduzca un modelo</label>
         <label>Modelo:</label>
-        <select name="modelo" [(ngModel)]="taxi.modelo" >
-            <option *ngFor="let modelo of modelos_por_marca" [value]="modelo">{{modelo}}</option>
+        <select 
+            name="modelo" 
+            [(ngModel)]="taxi.modelo" 
+            [disabled]="!modelosDisponibles.length" 
+            required
+            #modelo="ngModel"
+        >
+            <option *ngFor="let modelo of modelosDisponibles" [value]="modelo">{{ modelo }}</option>
         </select>
-    </div>
+      </div>
     <div>
+        <label class="error" *ngIf="nivelConfort.invalid && formEnviado">Introduzca un nivel de confort</label>
         <label>Nivel de confort:</label>
-        <select name="nivelConfort" [(ngModel)]="taxi.nivelConfort">
+        <select 
+            name="nivelConfort" 
+            [(ngModel)]="taxi.nivelConfort" 
+            required 
+            #nivelConfort="ngModel"
+        >
             <option value="basico">Basico</option>
             <option value="lujoso">Lujoso</option>
         </select>
     </div>
     <button type="submit">Registrar</button>
+    <label class="success" *ngIf="taxicreado">Taxi creado con exito!</label>
 </form>
 
 <h2>Taxis Registrados</h2>
@@ -37,4 +77,3 @@
         {{taxi.matricula}}  {{taxi.marca}}  {{taxi.modelo}}  {{taxi.anoCompra}}  {{taxi.nivelConfort}}
     </li>
 </ul>
-

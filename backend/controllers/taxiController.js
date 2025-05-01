@@ -1,4 +1,4 @@
-const Taxi = require('../models/Taxi');
+const Taxi = require('../models/taxi');
 
 exports.createTaxi = async (req, res) => {
     try {
@@ -7,7 +7,12 @@ exports.createTaxi = async (req, res) => {
         await taxi.save();
         res.status(201).json(taxi);
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        if (error.code === 11000) {
+            return res.status(400).json({ error: 'Matricula ya existente' });
+        }
+        else{
+            res.status(400).json({ error: error.message });
+        }
     }
 };
 

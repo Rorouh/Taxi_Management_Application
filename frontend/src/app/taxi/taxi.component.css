@@ -74,3 +74,18 @@ li {
   color: #333;
   transition: box-shadow 0.2s ease;
 }
+
+.success{
+  color: green;
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin: 1rem auto;
+  text-align: center;
+}
+
+.error{
+  color: red;
+  font-weight: bold;
+  margin: 1rem auto;
+  text-align: left;
+}

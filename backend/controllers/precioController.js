@@ -27,20 +27,18 @@ exports.getPrecios = async (req, res) => {
 exports.simularPrecio = async (req, res) => {
   try {
     const { nivelConfort, inicio, fin } = req.body;
-    // 1) Obtén la configuración
+
     const cfg = await Precio.findOne({ nivelConfort });
     if (!cfg) {
       return res.status(404).json({ error: 'Nivel de confort no configurado' });
     }
 
-    // 2) Valida fechas
     const start = new Date(inicio);
     const end   = new Date(fin);
     if (isNaN(start) || isNaN(end) || end <= start) {
       return res.status(400).json({ error: 'Fechas inválidas: fin debe ser posterior al inicio' });
     }
 
-    // 3) Cálculo por segmentos
     const minutosEntre = (a, b) => (b - a) / 60000;
     let total = 0;
     let cursor = new Date(start);
@@ -70,9 +68,8 @@ exports.simularPrecio = async (req, res) => {
       cursor = tramoFin;
     }
 
-    // 4) Devuelve el coste con dos decimales
     res.json({ coste: parseFloat(total.toFixed(2)) });
   } catch (e) {
-    res.status(500).json({ error: e.message });
+    res.status(400).json({ error: e.message });
   }
 };

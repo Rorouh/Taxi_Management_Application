@@ -18,39 +18,49 @@ export class TaxiComponent{
 
   taxis: Taxi[] = [];
 
-  lista_marcas = ['Renault', 'Mercedes', 'Toyota', 'Fiat', 'Peugeot', 'Nissan', 'Chevrolet', 'Honda', 'Mazda', 'Suzuki', 'Kia'];
-  modelos_por_marca = [
-    'Clio', 'Twingo', 'Megane',
-    'Clase A', 'Clase B', 'Clase C',
-    'Corolla', 'Yaris', 'Camry',
-    '500', 'Punto', 'Doblo',
-    '208', '2008', '3008',
-    'Qashqai', 'Leaf', 'Micra',
-    'Beat', 'Aveo', 'Cruze',
-    'Civic', 'Accord', 'CR-V',
-    '3', '6', 'CX-5',
-    'Swift', 'Alto', 'Jimny',
-    'Picanto', 'Rio', 'Sportage'
-  ];
+  lista_marcas: string[] = ['Renault', 'Mercedes', 'Toyota', 'Fiat', 'Peugeot', 'Nissan', 'Chevrolet', 'Honda', 'Mazda', 'Suzuki', 'Kia'];
 
+  modelosPorMarca: { [key: string]: string[] } = {
+    Renault: ['Clio', 'Twingo', 'Megane'],
+    Mercedes: ['Clase A', 'Clase B', 'Clase C'],
+    Toyota: ['Corolla', 'Yaris', 'Camry'],
+    Fiat: ['500', 'Punto', 'Doblo'],
+    Peugeot: ['208', '2008', '3008'],
+    Nissan: ['Qashqai', 'Leaf', 'Micra'],
+    Chevrolet: ['Beat', 'Aveo', 'Cruze'],
+    Honda: ['Civic', 'Accord', 'CR-V'],
+    Mazda: ['3', '6', 'CX-5'],
+    Suzuki: ['Swift', 'Alto', 'Jimny'],
+    Kia: ['Picanto', 'Rio', 'Sportage']
+  };
 
+  modelosDisponibles: string[] = [];
+  taxicreado: boolean = false;
+  maxAnoCompra: number = new Date().getFullYear();
+  formEnviado: boolean = false;
+  mensaje: string = '';
   constructor(private taxiService: TaxiService) { }
-
 
   ngOnInit() {
     this.cargarTaxis();
   }
+
   onSubmit() {
+    this.formEnviado = true;
+    this.mensaje = '';
+
     this.taxiService.registrarTaxi(this.taxi).subscribe({
       next: (response) => {
-        alert('Taxi creado!');
+        this.taxicreado = true;
         this.cargarTaxis();
         this.reset();
       },
       error: (error) => {
-        alert('Campos incorrectos');
+        if(error.error.error == 'Matricula ya existente') {
+          this.mensaje = error.error.error;
+        }
+        this.taxicreado = false;
       }
-
     });
   }
 
@@ -69,6 +79,12 @@ export class TaxiComponent{
       modelo: '',
       nivelConfort: ''
     }
+    this.formEnviado = false;
+  }
+
+  cambiarMarca() {
+    this.modelosDisponibles = this.modelosPorMarca[this.taxi.marca];
+    this.taxi.modelo = '';
   }
 
 }
