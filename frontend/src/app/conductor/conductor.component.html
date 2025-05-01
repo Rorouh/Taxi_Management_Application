@@ -6,7 +6,11 @@
       [(ngModel)]="conductor.nif"
       required
       pattern="\d{9}"
+      #nif="ngModel"
     />
+    <label class="error" *ngIf="nif.hasError('pattern') && formEnviado">NIF no valido: NNNNNNNNN</label>
+    <label class="error" *ngIf="nif.hasError('required') && formEnviado">Introduzca un NIF</label>
+    <label class="error" *ngIf="nifDuplicado && formEnviado">NIF ya existente</label>
   </div>
 
   <div>
@@ -15,7 +19,9 @@
       name="nombre"
       [(ngModel)]="conductor.nombre"
       required
+      #nombre="ngModel"
     />
+    <label class="error" *ngIf="nombre.hasError('required') && formEnviado">Introduzca un nombre</label>
   </div>
 
   <div>
@@ -24,9 +30,11 @@
       name="genero"
       [(ngModel)]="conductor.genero"
       required
+      #genero="ngModel"
     >
       <option *ngFor="let g of generos" [value]="g">{{ g }}</option>
     </select>
+    <label class="error" *ngIf="genero.hasError('required') && formEnviado">Introduzca un género</label>
   </div>
 
   <div>
@@ -38,7 +46,11 @@
       required
       [min]="minYear"
       [max]="maxYear"
+      #anoNacimiento="ngModel"
     />
+    <label class="error" *ngIf="anoNacimiento.hasError('required') && formEnviado">Introduzca un año de nacimiento</label>
+    <label class="error" *ngIf="anoNacimiento.hasError('min') && formEnviado">Debes ser mayor de 18 años</label>
+    <label class="error" *ngIf="anoNacimiento.hasError('max') && formEnviado">El año de nacimiento no puede superar el actual</label>
   </div>
 
   <fieldset>
@@ -49,7 +61,9 @@
         name="calle"
         [(ngModel)]="conductor.direccion.calle"
         required
+        #calle="ngModel"
       />
+      <label class="error" *ngIf="calle.hasError('required') && formEnviado">Introduzca una calle</label>
     </div>
     <div>
       <label>Número</label>
@@ -57,16 +71,34 @@
         name="numero"
         [(ngModel)]="conductor.direccion.numero"
         required
+        #numero="ngModel"
       />
+      <label class="error" *ngIf="numero.hasError('required') && formEnviado">Introduzca un numero</label>
     </div>
     <div>
       <label>Código Postal</label>
       <input
         name="codigoPostal"
         [(ngModel)]="conductor.direccion.codigoPostal"
+        (ngModelChange)="cambiarLocalidad($event)"
         required
         pattern="\d{4}-\d{3}"
+        #codigoPostal="ngModel"
       />
+      <label class="error" *ngIf="codigoPostal.hasError('pattern') && formEnviado">Código postal no valido: NNNN-NNN</label>
+      <label class="error" *ngIf="codigoPostal.hasError('required') && formEnviado">Introduzca un codigo postal</label>
+    </div>
+    <div>
+      <label>Localidad</label>
+      <input
+        name="localidad"
+        [(ngModel)]="conductor.direccion.localidad"
+        required
+        #localidad="ngModel"
+      />
+      <label class="error" *ngIf="localidad.hasError('required') && formEnviado">Introduzca una localidad</label>
+      <label class="error" *ngIf="conductor.direccion.localidad == '' && formEnviado">Código postal no existe</label>
+
     </div>
   </fieldset>
 
@@ -76,12 +108,17 @@
       name="licencia"
       [(ngModel)]="conductor.licencia"
       required
+      #licencia="ngModel"   
     />
+    <label class="error" *ngIf="licencia.hasError('required') && formEnviado">Introduzca una licencia</label>
+    <label class="error" *ngIf="licenciaDuplicada && formEnviado">Licencia ya existente</label>
+
   </div>
 
-  <button type="submit" [disabled]="f.invalid">
+  <button type="submit">
     Registrar conductor
   </button>
+  <label class="success" *ngIf="conductorCreado">Conductor creado con exito!</label>
 </form>
 
 <h2>Conductores Registrados</h2>

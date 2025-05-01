@@ -2,20 +2,21 @@
 
 <form #f="ngForm" (ngSubmit)="onSubmit()" >
     <div>
-        <label class="error" *ngIf="matricula.invalid && formEnviado && mensaje != 'Matricula ya existente'">Matricula no valida</label>
-        <label class="error" *ngIf="mensaje == 'Matricula ya existente'">{{mensaje}}</label>
         <label>Matricula:</label>
         <input 
-        type="text" 
-        name="matricula" 
-        [(ngModel)]="taxi.matricula" 
-        required
-        pattern="[A-Z]{2}-\d{2}-[A-Z]{2}"
-        #matricula="ngModel">
+            type="text" 
+            name="matricula" 
+            [(ngModel)]="taxi.matricula" 
+            required
+            pattern="[A-Z]{2}-\d{2}-[A-Z]{2}"
+            #matricula="ngModel"
+        />
+        <label class="error" *ngIf="matricula.hasError('pattern') && formEnviado">Matricula no valida: XX-NN-XX</label>
+        <label class="error" *ngIf="matricula.hasError('required') && formEnviado">Introduzca una matricula</label>
+        <label class="error" *ngIf="mensaje == 'Matricula ya existente' && formEnviado">{{mensaje}}</label>
 
-    </div>
+    </div>  
     <div>
-        <label class="error" *ngIf="anoCompra.invalid && formEnviado">Año de compra no valido</label>
         <label>Ano de compra:</label>
         <input 
             type="number" 
@@ -26,9 +27,11 @@
             max={{maxAnoCompra}}
             #anoCompra="ngModel"
         />
+        <label class="error" *ngIf="anoCompra.hasError('required') && formEnviado">Introduzca un año de compra</label>
+        <label class="error" *ngIf="anoCompra.hasError('min') && formEnviado">El año de compra debe ser mayor que 1900</label>
+        <label class="error" *ngIf="anoCompra.hasError('max') && formEnviado">El año de compra no puede superar el actual</label>
     </div>
     <div>
-        <label class="error" *ngIf="marca.invalid && formEnviado">Introduzca una marca</label>
         <label>Marca:</label>
         <select 
             name="marca" 
@@ -39,10 +42,10 @@
         >
             <option *ngFor="let marca of lista_marcas" [value]="marca">{{ marca }}</option>
         </select>
+        <label class="error" *ngIf="marca.hasError('required') && formEnviado">Introduzca una marca</label>
       </div>
       
       <div>
-        <label class="error" *ngIf="modelo.invalid && formEnviado">Introduzca un modelo</label>
         <label>Modelo:</label>
         <select 
             name="modelo" 
@@ -53,9 +56,9 @@
         >
             <option *ngFor="let modelo of modelosDisponibles" [value]="modelo">{{ modelo }}</option>
         </select>
+        <label class="error" *ngIf="modelo.hasError('required') && formEnviado">Introduzca un modelo</label>
       </div>
     <div>
-        <label class="error" *ngIf="nivelConfort.invalid && formEnviado">Introduzca un nivel de confort</label>
         <label>Nivel de confort:</label>
         <select 
             name="nivelConfort" 
@@ -66,6 +69,7 @@
             <option value="basico">Basico</option>
             <option value="lujoso">Lujoso</option>
         </select>
+        <label class="error" *ngIf="nivelConfort.hasError('required') && formEnviado">Introduzca un nivel de confort</label>
     </div>
     <button type="submit">Registrar</button>
     <label class="success" *ngIf="taxicreado">Taxi creado con exito!</label>

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ConductorService } from '../services/conductor.service';
-
+import cp from '../data/codigos_postais.json';
 interface Conductor {
   nif: string;
   nombre: string;
@@ -44,20 +44,40 @@ export class ConductorComponent {
   conductores : Conductor[] = [];
   generos: Conductor['genero'][] = ['femenino', 'masculino'];
 
+  conductorCreado: boolean = false;
+  formEnviado: boolean = false;
+  nifDuplicado: boolean = false;
+  licenciaDuplicada: boolean = false;
+  cpNoValido: boolean = false;
+
   constructor(private conductorService: ConductorService) {}
 
   ngOnInit() {
     this.cargarConductores();
   }
+
+  cambiarLocalidad(codP: string) {
+    const localidad = (cp as any)[codP] || '';
+    this.conductor.direccion.localidad = localidad; 
+  }
   onSubmit() {
+    this.formEnviado = true;
+    this.nifDuplicado = false;
+    this.licenciaDuplicada = false;
+
     this.conductorService.crearConductor(this.conductor).subscribe({
       next: () => {
-        alert('Conductor creado!');
         this.cargarConductores();
         this.resetForm();
+        this.conductorCreado = true;
       },
       error: (err) => {
-        alert('Campos incorrectos');
+        if (err.error.error == 'NIF ya existente') {
+          this.nifDuplicado = true;
+        }
+        if (err.error.error == 'Licencia ya existente') {
+          this.licenciaDuplicada = true;
+        }
       }
     });
   }
@@ -82,5 +102,10 @@ export class ConductorComponent {
       },
       licencia: ''
     };
+    this.formEnviado = false;
+    this.nifDuplicado = false;
+    this.licenciaDuplicada = false;
   }
+
+
 }
