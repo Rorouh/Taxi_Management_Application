@@ -29,4 +29,8 @@ export class ConductorService {
   obtenerConductores(): Observable<Conductor[]> {
     return this.http.get<Conductor[]>(this.url);
   }
+
+  obtenerConductorNIF(nif: string): Observable<Conductor> {
+    return this.http.get<Conductor>(`${this.url}/${nif}`);
+  }
 }

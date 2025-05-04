@@ -1,0 +1,25 @@
+<h2>Iniciar Sesion</h2>
+<form #f="ngForm" (ngSubmit)="iniciarSesion()">
+    <label>Introduzca tu NIF</label>
+    <input 
+        name="nif" 
+        [(ngModel)]="nif" 
+        required
+        pattern="\d{9}"
+        #nifInput="ngModel"
+    />
+    <label class="error" *ngIf="nifInput.hasError('pattern') && f.submitted">NIF no valido: NNNNNNNNN</label>
+    <label class="error" *ngIf="nifInput.hasError('required') && f.submitted">Introduzca un NIF</label>
+    <label class="error" *ngIf="mensaje != '' && f.submitted && nifInput.valid">{{mensaje}}</label>
+
+    <button type="submit">Iniciar sesion</button>
+</form>
+
+<form>
+    <label>Seleccione tu NIF de la lista</label>
+    <li *ngFor="let c of conductores">
+        <button class="lista" (click)="iniciarSesionLista(c.nif)">
+            {{c.nif}} - {{c.nombre}}
+        </button>
+    </li>
+</form>

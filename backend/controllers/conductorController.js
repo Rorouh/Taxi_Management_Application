@@ -28,4 +28,16 @@ exports.getConductores = async (req, res) => {
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-}
+};
+
+exports.getConductorNIF = async (req, res) => {
+    try {
+        const conductor = await Conductor.findOne({ nif: req.params.nif });
+        if (!conductor) {
+            return res.status(404).json({ error: 'Conductor no encontrado' });
+        }
+        res.status(200).json(conductor);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};

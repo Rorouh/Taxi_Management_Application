@@ -10,6 +10,9 @@ import { PrecioConfigComponent } from './precio-config/precio-config.component';
 
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule }                from '@angular/common/http';
+import { IniciarSesionComponent } from './iniciar-sesion/iniciar-sesion.component';
+import { MenuComponent } from './menu/menu.component';
+import { TurnoComponent } from './turno/turno.component';
 
 @NgModule({
   declarations: [
@@ -18,6 +21,9 @@ import { HttpClientModule }                from '@angular/common/http';
     DashboardComponent,
     ConductorComponent,
     PrecioConfigComponent,
+    IniciarSesionComponent,
+    MenuComponent,
+    TurnoComponent,
   ],
   imports: [
     BrowserModule,
