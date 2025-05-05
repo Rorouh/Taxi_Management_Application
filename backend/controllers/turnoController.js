@@ -80,10 +80,7 @@ exports.getTaxisDisponibles = async (req, res) => {
             const turnosTaxi = await Turno.find({ taxi: taxi._id });
             let ocupado = false;
             for(const turnoTaxi of turnosTaxi){
-                if(
-                    (turnoTaxi.fin > inicioDate && turnoTaxi.inicio > inicioDate) || 
-                    (turnoTaxi.inicio < finDate && finDate < turnoTaxi.fin) ||
-                    (turnoTaxi.inicio < inicioDate && finDate > turnoTaxi.fin)){
+                if(turnoTaxi.fin > inicioDate && turnoTaxi.inicio < finDate){
                     ocupado = true;
                     break;
                 }

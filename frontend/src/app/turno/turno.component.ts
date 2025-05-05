@@ -59,7 +59,7 @@ export class TurnoComponent {
       next: (turno) => {
         this.resetForm();
         this.turnoCreado = true;
-        this.turnos.push(turno);
+        this.cargarTurnos();
       },
       error: (error) => {
         this.mensaje = error.error.error;
@@ -79,13 +79,10 @@ export class TurnoComponent {
   mostrarTaxisDisponibles() {
     this.mostrarTaxis = false;
     this.turnoCreado = false;
-    
+    this.mensaje = '';
+
     for(const turno of this.turnos){
-      if(
-        (turno.fin > this.turno.inicio && turno.inicio > this.turno.inicio) || 
-        (turno.inicio < this.turno.fin && this.turno.fin < turno.fin) ||
-        (turno.inicio < this.turno.inicio && this.turno.fin > turno.fin)
-      ){
+      if(turno.fin > this.turno.inicio && turno.inicio < this.turno.fin){
         this.mensaje = 'El conductor esta ocupado en ese horario';
         return;
       }
