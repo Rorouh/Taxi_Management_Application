@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Conductor {
+  _id?: string;
   nif: string;
   nombre: string;
   genero: 'femenino'|'masculino';

@@ -2,6 +2,7 @@ const Turno = require('../models/turno');
 const Conductor = require('../models/Conductor');
 const Taxi = require('../models/taxi');
 
+
 exports.getTurnos = async (req, res) => {
     try {
         const turnos = await Turno.find();
@@ -13,24 +14,24 @@ exports.getTurnos = async (req, res) => {
 
 exports.createTurno = async (req, res) => {
     try {
-        const turno = new Turno(req.body);
-        if(turno.fin <= turno.inicio){
-            return res.status(400).json({ error: 'Fechas inválidas: fin debe ser posterior al inicio' });
-        }
-        const tiempo_max = 8 * 60 * 60 * 1000;
-        if(turno.fin - turno.inicio > tiempo_max){
-            return res.status(400).json({ error: 'Turno demasiado largo' });
-        }
-        if(turno.inicio < Date.now()){
-            return res.status(400).json({ error: 'Turno en el pasado' });
-        }
-        const turnosConductor = await Turno.find({ conductor: turno.conductor._id });
+        const { conductor, taxi, inicio, fin } = req.body;
+        const inicioDate = new Date(inicio);
+        const finDate = new Date(fin);
+
+        const turno = new Turno({
+            conductor,
+            taxi,
+            inicio: inicioDate,
+            fin: finDate,
+        });
+
+        const turnosConductor = await Turno.find({ conductor: turno.conductor });
         for(const turnoConductor of turnosConductor){
             if(turnoConductor.fin > turno.inicio && turnoConductor.inicio < turno.fin){
                 return res.status(400).json({ error: 'Conductor ocupado en ese horario' });
             }
         }
-        const turnosTaxi = await Turno.find({ taxi: turno.taxi._id });
+        const turnosTaxi = await Turno.find({ taxi: turno.taxi });
         for(const turnoTaxi of turnosTaxi){
             if(turnoTaxi.fin > turno.inicio && turnoTaxi.inicio < turno.fin){
                 return res.status(400).json({ error: 'Taxi ocupado en ese horario' });
@@ -43,20 +44,59 @@ exports.createTurno = async (req, res) => {
     }
 };
 
-exports.getTurnoConductor = async (req, res) => {
+exports.getTurnosConductor = async (req, res) => {
     try {
         const conductor = await Conductor.findOne({ nif: req.params.nif });
         if (!conductor) {
             return res.status(404).json({ error: 'Conductor no encontrado' });
         }
-        const turnos = await Turno.find({ conductor: conductor._id });
+        const turnos = await Turno.find({ conductor: conductor._id }).populate('conductor').populate('taxi').sort({ inicio: 1 });
         res.status(200).json(turnos);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
 
+exports.getTaxisDisponibles = async (req, res) => {
+    try {
+        const { inicio, fin } = req.body;
+        const inicioDate = new Date(inicio);
+        const finDate = new Date(fin);
 
+        if(inicioDate < Date.now()){
+            return res.status(400).json({ error: 'Turno en el pasado' });
+        }
+        if(finDate <= inicioDate){
+            return res.status(400).json({ error: 'Fechas inválidas: fin debe ser posterior al inicio' });
+        }
+        const tiempo_max = 8 * 60 * 60 * 1000;
+        if(finDate - inicioDate > tiempo_max){
+            return res.status(400).json({ error: 'Turno demasiado largo' });
+        }
+
+        const taxis = await Taxi.find({});
+        const taxisDisponibles = [];
+        for(const taxi of taxis){
+            const turnosTaxi = await Turno.find({ taxi: taxi._id });
+            let ocupado = false;
+            for(const turnoTaxi of turnosTaxi){
+                if(
+                    (turnoTaxi.fin > inicioDate && turnoTaxi.inicio > inicioDate) || 
+                    (turnoTaxi.inicio < finDate && finDate < turnoTaxi.fin) ||
+                    (turnoTaxi.inicio < inicioDate && finDate > turnoTaxi.fin)){
+                    ocupado = true;
+                    break;
+                }
+            }
+            if(!ocupado){
+                taxisDisponibles.push(taxi);
+            }
+        }
+        res.status(200).json(taxisDisponibles);
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
 
 
 

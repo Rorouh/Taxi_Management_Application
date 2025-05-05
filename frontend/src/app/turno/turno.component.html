@@ -1,1 +1,46 @@
-<p>turno works!</p>
+<h2>Reservar Turno</h2>
+<form (ngSubmit)="mostrarTaxisDisponibles()" #f="ngForm">
+    <label>Inicio</label>
+    <input 
+        type="datetime-local" 
+        name="inicio" 
+        required 
+        [(ngModel)]="turno.inicio" 
+        #inicio="ngModel"
+    />
+    
+    <label>Fin</label>
+    <input 
+        type="datetime-local" 
+        name="fin" 
+        required 
+        [(ngModel)]="turno.fin"
+        #fin="ngModel"
+    />
+
+    <button type="submit">Mostrar taxis disponibles</button>
+    <label class="error" *ngIf="mensaje != '' && f.submitted">{{mensaje}}</label>
+    <label class="success" *ngIf="turnoCreado">Turno asignado con exito!</label>
+
+</form>
+
+<form *ngIf="mostrarTaxis">
+        <label>Seleccione un taxi</label>
+        <li *ngFor="let t of taxis">
+            <button class="lista" (click)="reservarTurno(t)">
+                {{t.matricula}} - {{t.marca}} - {{t.modelo}}
+            </button>
+        </li>
+</form>
+    
+   
+<hr />
+
+<h3>Mis turnos</h3>
+<ul class ="lista">
+    <li  class="lista" *ngFor="let t of turnos">
+        {{t.inicio | date: 'dd/MM/yyyy HH:mm'}} - {{t.fin | date: 'dd/MM/yyyy HH:mm'}} 
+        {{t.taxi.matricula}} - {{t.taxi.marca}} - {{t.taxi.modelo}}
+    </li>
+</ul>
+
