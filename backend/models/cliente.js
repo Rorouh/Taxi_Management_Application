@@ -1,11 +1,21 @@
 const mongoose = require('mongoose');
 
-const Schema = mongoose.Schema;
-
-const clienteSchema = new Schema({
-    nif: { type: String, required: true, unique: true },
-    nome: { type: String, required: true },
-    genero: { type: String, enum: ['masculino', 'feminino'], required: true },
+const clienteSchema = new mongoose.Schema({
+  nif: {
+    type: String,
+    required: true,
+    match: [/^\d{9}$/, 'El NIF debe tener 9 dígitos'],
+    unique: true
+  },
+  nombre:        { type: String, required: true },
+  genero:        { type: String, enum: ['femenino','masculino'], required: true },
+  direccion: {
+    calle: { type: String, required: true },
+    numero: { type: String, required: true },
+    codigoPostal: { type: String, required: true },
+    localidad: { type: String}
+  },
+  createdAt:     { type: Date, default: Date.now }
 });
 
-module.exports = mongoose.model('cliente', clienteSchema);
+module.exports = mongoose.model('Cliente', clienteSchema);

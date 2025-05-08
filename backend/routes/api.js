@@ -5,6 +5,7 @@ const taxiController = require('../controllers/taxiController');
 const conductorController = require('../controllers/conductorController');
 const precioController = require('../controllers/precioController');
 const turnoController = require('../controllers/turnoController');
+const clienteController = require('../controllers/clienteController');
 
 router.post('/taxi', taxiController.createTaxi);
 router.get('/taxi', taxiController.getTaxis);
@@ -23,5 +24,8 @@ router.get('/turno', turnoController.getTurnos);
 router.get('/turno/:nif', turnoController.getTurnosConductor);
 router.post('/turno', turnoController.createTurno);
 router.post('/turno/taxis-disponibles', turnoController.getTaxisDisponibles);
+
+router.post('/cliente', clienteController.createCliente);
+router.get('/cliente/:nif', clienteController.getClienteNIF);
 
 module.exports = router;

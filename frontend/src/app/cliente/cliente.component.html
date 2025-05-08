@@ -1,0 +1,127 @@
+<h2> Inicia Sesion</h2>
+<form #fl="ngForm" (ngSubmit)="iniciarSesion()">
+    <label>Introduzca tu NIF</label>
+    <input 
+        name="nif" 
+        [(ngModel)]="niflogin" 
+        required
+        pattern="\d{9}"
+        #nifInput="ngModel"
+    />
+    <label class="error" *ngIf="nifInput.hasError('pattern') && fl.submitted">NIF no valido: NNNNNNNNN</label>
+    <label class="error" *ngIf="nifInput.hasError('required') && fl.submitted">Introduzca un NIF</label>
+    <label class="error" *ngIf="mensajelogin != '' && fl.submitted && nifInput.valid">{{mensajelogin}}</label>
+
+    <button type="submit">Iniciar sesion</button>
+</form>
+
+<h2>Registrarse</h2>
+<form (ngSubmit)="onSubmit()" >
+    <div>
+      <label>NIF</label>
+      <input
+        name="nif"
+        [(ngModel)]="cliente.nif"
+        required
+        pattern="\d{9}"
+        #nif="ngModel"
+      />
+      <label class="error" *ngIf="nif.hasError('pattern') && formEnviado">NIF no valido: NNNNNNNNN</label>
+      <label class="error" *ngIf="nif.hasError('required') && formEnviado">Introduzca un NIF</label>
+      <label class="error" *ngIf="nifDuplicado && formEnviado">NIF ya existente</label>
+    </div>
+  
+    <div>
+      <label>Nombre</label>
+      <input
+        name="nombre"
+        [(ngModel)]="cliente.nombre"
+        required
+        #nombre="ngModel"
+      />
+      <label class="error" *ngIf="nombre.hasError('required') && formEnviado">Introduzca un nombre</label>
+    </div>
+  
+    <div>
+      <label>Género</label>
+      <select
+        name="genero"
+        [(ngModel)]="cliente.genero"
+        required
+        #genero="ngModel"
+      >
+        <option *ngFor="let g of generos" [value]="g">{{ g }}</option>
+      </select>
+      <label class="error" *ngIf="genero.hasError('required') && formEnviado">Introduzca un género</label>
+    </div>
+  
+    <div>
+      <label>Año de nacimiento</label>
+      <input
+        type="number"
+        name="anoNacimiento"
+        [(ngModel)]="cliente.anoNacimiento"
+        required
+        [min]="minYear"
+        [max]="maxYear"
+        #anoNacimiento="ngModel"
+      />
+      <label class="error" *ngIf="anoNacimiento.hasError('required') && formEnviado">Introduzca un año de nacimiento</label>
+      <label class="error" *ngIf="anoNacimiento.hasError('min') && formEnviado">Debes ser mayor de 18 años</label>
+      <label class="error" *ngIf="anoNacimiento.hasError('max') && formEnviado">El año de nacimiento no puede superar el actual</label>
+    </div>
+  
+    <fieldset>
+      <legend>Dirección</legend>
+      <div>
+        <label>Calle</label>
+        <input
+          name="calle"
+          [(ngModel)]="cliente.direccion.calle"
+          required
+          #calle="ngModel"
+        />
+        <label class="error" *ngIf="calle.hasError('required') && formEnviado">Introduzca una calle</label>
+      </div>
+      <div>
+        <label>Número</label>
+        <input
+          name="numero"
+          [(ngModel)]="cliente.direccion.numero"
+          required
+          #numero="ngModel"
+        />
+        <label class="error" *ngIf="numero.hasError('required') && formEnviado">Introduzca un numero</label>
+      </div>
+      <div>
+        <label>Código Postal</label>
+        <input
+          name="codigoPostal"
+          [(ngModel)]="cliente.direccion.codigoPostal"
+          (ngModelChange)="cambiarLocalidad($event)"
+          required
+          pattern="\d{4}-\d{3}"
+          #codigoPostal="ngModel"
+        />
+        <label class="error" *ngIf="codigoPostal.hasError('pattern') && formEnviado">Código postal no valido: NNNN-NNN</label>
+        <label class="error" *ngIf="codigoPostal.hasError('required') && formEnviado">Introduzca un codigo postal</label>
+      </div>
+      <div>
+        <label>Localidad</label>
+        <input
+          name="localidad"
+          [(ngModel)]="cliente.direccion.localidad"
+          required
+          #localidad="ngModel"
+        />
+        <label class="error" *ngIf="localidad.hasError('required') && formEnviado">Introduzca una localidad</label>
+        <label class="error" *ngIf="cliente.direccion.localidad == '' && formEnviado">Código postal no existe</label>
+  
+      </div>
+    </fieldset>
+ <button type="submit">
+      Registrar cliente
+    </button>
+    <label class="success" *ngIf="clienteCreado">cliente creado con exito!</label>
+  </form>
+  

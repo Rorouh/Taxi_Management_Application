@@ -13,6 +13,8 @@ import { HttpClientModule }                from '@angular/common/http';
 import { IniciarSesionComponent } from './iniciar-sesion/iniciar-sesion.component';
 import { MenuComponent } from './menu/menu.component';
 import { TurnoComponent } from './turno/turno.component';
+import { clienteComponent } from './cliente/cliente.component';
+import { PedidoComponent } from './pedido/pedido.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +26,8 @@ import { TurnoComponent } from './turno/turno.component';
     IniciarSesionComponent,
     MenuComponent,
     TurnoComponent,
+    clienteComponent,
+    PedidoComponent,
   ],
   imports: [
     BrowserModule,

@@ -8,6 +8,8 @@ import { PrecioConfigComponent } from './precio-config/precio-config.component';
 import { IniciarSesionComponent } from './iniciar-sesion/iniciar-sesion.component';
 import { MenuComponent } from './menu/menu.component';
 import { TurnoComponent } from './turno/turno.component';
+import { clienteComponent } from './cliente/cliente.component';
+import { PedidoComponent } from './pedido/pedido.component';
 const routes: Routes = [
   { path: '',           redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'dashboard',  component: DashboardComponent },
@@ -17,6 +19,8 @@ const routes: Routes = [
   { path: 'iniciarSesion', component: IniciarSesionComponent },
   {path: 'menu/:nif', component: MenuComponent},
   {path: 'turno/:nif', component: TurnoComponent},
+  {path: 'cliente', component: clienteComponent},
+  {path: 'pedido/:id', component: PedidoComponent},
   { path: '**',         redirectTo: 'dashboard' }
 ];
 
