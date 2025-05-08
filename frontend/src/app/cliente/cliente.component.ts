@@ -62,7 +62,7 @@ export class clienteComponent {
     this.clienteService.crearCliente(this.cliente).subscribe({
       next: (cliente) => {
         this.clienteCreado = true;
-        this.router.navigate(['/menu', cliente._id]);
+        this.router.navigate(['/pedido', cliente._id]);
       },
       error: (err) => {
         if (err.error.error == 'NIF ya existente') {
