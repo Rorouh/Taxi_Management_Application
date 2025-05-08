@@ -83,7 +83,7 @@ export class clienteComponent {
     }
     this.clienteService.obtenerClienteNIF(this.niflogin).subscribe({
       next: (cliente) => {
-        this.router.navigate(['/menu', cliente._id]);
+        this.router.navigate(['/pedido', cliente._id]);
       },
       error: (error) => {
         this.mensajelogin = `Error al iniciar sesion, no existe el NIF`
