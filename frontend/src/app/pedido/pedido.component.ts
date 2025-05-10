@@ -1,4 +1,4 @@
-import { Component, OnInit} from '@angular/core';
+import { AfterViewInit, Component, OnInit} from '@angular/core';
 import { Conductor } from '../services/conductor.service';
 import { Cliente, ClienteService } from '../services/cliente.service';
 import { PedidoService } from '../services/pedido.service';
@@ -7,6 +7,7 @@ import { ActivatedRoute } from '@angular/router';
 import  cp  from '../data/codigos_postais.json';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
+import { After } from 'v8';
 
 export interface PedidoFront {
   id?: string;
@@ -30,6 +31,8 @@ export interface PedidoFront {
   numPersonas: number,
   estado: string,
   confort: string,
+  distancia: number,
+  tiempo: number
 }
 
 declare const L : any;
@@ -40,7 +43,7 @@ declare const L : any;
   templateUrl: './pedido.component.html',
   styleUrl: './pedido.component.css'
 })
-export class PedidoComponent implements OnInit {
+export class PedidoComponent implements OnInit, AfterViewInit {
   
   pedido: PedidoFront = {
     cliente: '',
@@ -63,6 +66,8 @@ export class PedidoComponent implements OnInit {
     numPersonas: 1,
     estado: 'pendiente',
     confort: '',
+    distancia: 0,
+    tiempo: 0
   }
 
   cliente!: Cliente;
@@ -78,9 +83,12 @@ export class PedidoComponent implements OnInit {
         this.cliente = cliente;
         this.pedido.cliente = cliente._id || '';
       });
-    this.geolocalizar();
-
   }
+  
+  ngAfterViewInit() {
+    this.geolocalizar();
+  }
+
   onSubmit(fp : NgForm) {
     if(fp.invalid) {
       this.formEnviado = true;
@@ -88,14 +96,11 @@ export class PedidoComponent implements OnInit {
     }
     else{
       this.formEnviado = false;
+      this.establecerDistancia();
       this.pedidoService.registrarPedido(this.pedido)
         .subscribe(pedido => {
-          this.router.navigate(['/esperar-pedido',pedido._id]);
-        },
-        error => {
-          console.log(error);
-        }
-      );
+          this.router.navigate(['/esperar-pedido', pedido._id]);
+        });
     }
 
   }
@@ -158,5 +163,32 @@ export class PedidoComponent implements OnInit {
     const localidad = (cp as any)[codP] || '';
     this.pedido.destino.localidad = localidad; 
   }
+
+  private toRad(x: number) {
+    return x * Math.PI / 180;
+  }
+
+  establecerDistancia(){
+    const R = 6371;
+    const lat1 = this.pedido.origen.latitud;
+    const lon1 = this.pedido.origen.longitud;
+    const lat2 = this.pedido.destino.latitud;
+    const lon2 = this.pedido.destino.longitud;
+
+    const dLat = this.toRad(lat2 - lat1);
+    const dLon = this.toRad(lon2 - lon1);
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(this.toRad(lat1)) *
+      Math.cos(this.toRad(lat2)) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    
+    this.pedido.distancia = R * c;
+    this.pedido.tiempo = this.pedido.distancia*4;
+  }
+  
 
 }

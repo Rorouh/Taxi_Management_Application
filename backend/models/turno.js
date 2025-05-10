@@ -11,4 +11,4 @@ const turnoSchema = new Schema({
     fin: { type: Date, required: true },
 });
 
-module.exports = mongoose.model('turno', turnoSchema);
+module.exports = mongoose.model('Turno', turnoSchema);

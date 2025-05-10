@@ -27,6 +27,8 @@ export interface Pedido {
   numPersonas: number,
   estado: string,
   confort: string,
+  distancia: number,
+  tiempo: number
 }
 
 @Injectable({

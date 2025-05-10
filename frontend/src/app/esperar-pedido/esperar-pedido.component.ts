@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Pedido, PedidoService } from '../services/pedido.service';
 import {PedidoFront} from '../pedido/pedido.component';
 import { ActivatedRoute } from '@angular/router';
@@ -8,7 +8,7 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './esperar-pedido.component.html',
   styleUrl: './esperar-pedido.component.css'
 })
-export class EsperarPedidoComponent {
+export class EsperarPedidoComponent  implements OnInit{
   pedido!: Pedido;
 
   constructor(private pedidoService: PedidoService, private route: ActivatedRoute){}

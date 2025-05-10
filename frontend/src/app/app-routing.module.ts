@@ -22,7 +22,7 @@ const routes: Routes = [
   {path: 'turno/:nif', component: TurnoComponent},
   {path: 'cliente', component: ClienteComponent},
   {path: 'pedido/:nif', component: PedidoComponent},
-  {path: 'esperar-pedido/:nif', component: EsperarPedidoComponent},
+  {path: 'esperar-pedido/:id', component: EsperarPedidoComponent},
   { path: '**',         redirectTo: 'dashboard' }
 ];
 
