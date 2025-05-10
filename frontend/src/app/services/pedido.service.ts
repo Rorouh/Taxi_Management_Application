@@ -26,11 +26,7 @@ export interface Pedido {
   },
   numPersonas: number,
   estado: string,
-  conductor: Conductor,
-  distancia: number,
   confort: string,
-  tiempo: number,
-  costo: number
 }
 
 @Injectable({
@@ -38,9 +34,14 @@ export interface Pedido {
 })
 export class PedidoService {
   private url = 'http://localhost:3000/pedido'
+
   constructor( private http: HttpClient) { }
 
-  registrarPedido(pedido: Pedido): Observable<Pedido> {
-    return this.http.post<Pedido>(this.url, pedido);
+  registrarPedido(pedido: any): Observable<any> {
+    return this.http.post<any>(this.url, pedido);
+  }
+
+  getPedidoId(id: string): Observable<any> {
+    return this.http.get<any>(`${this.url}/${id}`);
   }
 }

@@ -3,7 +3,7 @@ import { ClienteService } from '../services/cliente.service';
 import { Cliente } from '../services/cliente.service';
 import { Router } from '@angular/router';
 import cp from '../data/codigos_postais.json';
-
+import { NgForm } from '@angular/forms';
 
  
 @Component({
@@ -13,7 +13,7 @@ import cp from '../data/codigos_postais.json';
   styleUrls: ['./cliente.component.css']
 })
 
-export class clienteComponent {
+export class ClienteComponent {
   // Límites para el año de nacimiento
   minYear: number = new Date().getFullYear() - 100;
   maxYear: number = new Date().getFullYear() - 18;
@@ -30,7 +30,6 @@ export class clienteComponent {
       codigoPostal: '',
       localidad: ''
     },
-    licencia: ''
   };
   generos: Cliente['genero'][] = ['femenino', 'masculino'];
 
@@ -55,14 +54,16 @@ export class clienteComponent {
     this.cliente.direccion.localidad = localidad; 
   }
 
-  onSubmit() {
+  onSubmit(fr : NgForm) {
     this.formEnviado = true;
     this.nifDuplicado = false;
-
+    if(fr.invalid) {
+      return;
+    }
     this.clienteService.crearCliente(this.cliente).subscribe({
       next: (cliente) => {
         this.clienteCreado = true;
-        this.router.navigate(['/pedido', cliente._id]);
+        this.router.navigate(['/pedido', cliente.nif]);
       },
       error: (err) => {
         if (err.error.error == 'NIF ya existente') {
@@ -83,7 +84,7 @@ export class clienteComponent {
     }
     this.clienteService.obtenerClienteNIF(this.niflogin).subscribe({
       next: (cliente) => {
-        this.router.navigate(['/pedido', cliente._id]);
+        this.router.navigate(['/pedido', cliente.nif]);
       },
       error: (error) => {
         this.mensajelogin = `Error al iniciar sesion, no existe el NIF`

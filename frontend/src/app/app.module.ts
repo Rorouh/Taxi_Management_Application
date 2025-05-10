@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration, withEventReplay } from '@angular/platform-browser';
-
 import { AppRoutingModule }   from './app-routing.module';
 import { AppComponent }       from './app.component';
 import { TaxiComponent }      from './taxi/taxi.component';
@@ -13,8 +12,9 @@ import { HttpClientModule }                from '@angular/common/http';
 import { IniciarSesionComponent } from './iniciar-sesion/iniciar-sesion.component';
 import { MenuComponent } from './menu/menu.component';
 import { TurnoComponent } from './turno/turno.component';
-import { clienteComponent } from './cliente/cliente.component';
+import { ClienteComponent } from './cliente/cliente.component';
 import { PedidoComponent } from './pedido/pedido.component';
+import { EsperarPedidoComponent } from './esperar-pedido/esperar-pedido.component';
 
 @NgModule({
   declarations: [
@@ -26,14 +26,15 @@ import { PedidoComponent } from './pedido/pedido.component';
     IniciarSesionComponent,
     MenuComponent,
     TurnoComponent,
-    clienteComponent,
+    ClienteComponent,
     PedidoComponent,
+    EsperarPedidoComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule,           // para formularios template-driven
-    ReactiveFormsModule,   // para formularios reactivos (Conductor, Precio)
+    FormsModule,           
+    ReactiveFormsModule,   
     HttpClientModule,
   ],
   providers: [

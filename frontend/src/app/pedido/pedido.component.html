@@ -1,1 +1,132 @@
-<h2>{{pedido.cliente}}</h2>
+<h2> Bienvenido, {{cliente.nombre}}</h2>
+<form  #fp="ngForm" (ngSubmit)="onSubmit(fp)">
+<legend>Origen</legend>
+    <div>
+      <label>Calle</label>
+      <input
+        name="calle"
+        [(ngModel)]="pedido.origen.calle"
+        required
+        #calle="ngModel"
+      />
+      <label class="error" *ngIf="calle.hasError('required') && formEnviado">Introduzca una calle</label>
+    </div>
+    <div>
+      <label>Número</label>
+      <input
+        name="numero"
+        [(ngModel)]="pedido.origen.numero"
+        required
+        #numero="ngModel"
+      />
+      <label class="error" *ngIf="numero.hasError('required') && formEnviado">Introduzca un numero</label>
+    </div>
+    <div>
+      <label>Código Postal</label>
+      <input
+        name="codigoPostal"
+        [(ngModel)]="pedido.origen.codigoPostal"
+        (ngModelChange)="cambiarLocalidadOrigen($event)"
+        required
+        pattern="\d{4}-\d{3}"
+        #codigoPostal="ngModel"
+      />
+      <label class="error" *ngIf="codigoPostal.hasError('pattern') && formEnviado">Código postal no valido: NNNN-NNN</label>
+      <label class="error" *ngIf="codigoPostal.hasError('required') && formEnviado">Introduzca un codigo postal</label>
+    </div>
+    <div>
+      <label>Localidad</label>
+      <input
+        name="localidad"
+        [(ngModel)]="pedido.origen.localidad"
+        required
+        #localidad="ngModel"
+      />
+      <label class="error" *ngIf="localidad.hasError('required') && formEnviado">Introduzca una localidad</label>
+      <label class="error" *ngIf="pedido.origen.localidad == '' && formEnviado">Código postal no existe</label>
+
+    </div>
+
+    <legend>Destino</legend>
+    <div>
+      <div id="mapDestino" style="height: 300px; margin-bottom:1rem;"></div>
+      <label>Calle</label>
+      <input
+        name="calleDestino"
+        [(ngModel)]="pedido.destino.calle"
+        required
+        #calledestino="ngModel"
+      />
+      <label class="error" *ngIf="calledestino.hasError('required') && formEnviado">Introduzca una calle</label>
+    </div>
+    <div>
+      <label>Número</label>
+      <input
+        name="numeroDestino"
+        [(ngModel)]="pedido.destino.numero"
+        required
+        #numerodestino="ngModel"
+      />
+      <label class="error" *ngIf="numerodestino.hasError('required') && formEnviado">Introduzca un numero</label>
+    </div>
+    <div>
+      <label>Código Postal</label>
+      <input
+        name="codigoPostalDestino"
+        [(ngModel)]="pedido.destino.codigoPostal"
+        (ngModelChange)="cambiarLocalidadDestino($event)"
+        required
+        pattern="\d{4}-\d{3}"
+        #codigoPostalDestino="ngModel"
+      />
+      <label class="error" *ngIf="codigoPostalDestino.hasError('pattern') && formEnviado">Código postal no valido: NNNN-NNN</label>
+      <label class="error" *ngIf="codigoPostalDestino.hasError('required') && formEnviado">Introduzca un codigo postal</label>
+    </div>
+    <div>
+      <label>Localidad</label>
+      <input
+        name="localidadDestino"
+        [(ngModel)]="pedido.destino.localidad"
+        required
+        #localidadDestino="ngModel"
+      />
+      <label class="error" *ngIf="localidadDestino.hasError('required') && formEnviado">Introduzca una localidad</label>
+      <label class="error" *ngIf="pedido.destino.localidad == '' && formEnviado">Introduzca una localidad</label>
+
+    </div>
+    <legend>Datos adicionales</legend>
+    <div>
+      <label>Numero de personas</label>
+      <select
+        name="numPersonas"
+        [(ngModel)]="pedido.numPersonas"
+        required
+        #numPersonas="ngModel"
+      >
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+      </select>
+      <label class="error" *ngIf="numPersonas.hasError('required') && formEnviado"></label>
+    </div>
+
+
+    <div>
+        <label>Nivel de confort</label>
+        <select
+          name="nivelConfort"
+          [(ngModel)]="pedido.confort"
+          required
+          #nivelConfort="ngModel"
+        >
+          <option value="basico" >Basico</option>
+          <option value="lujoso">Lujoso</option>
+        </select>
+        <label class="error" *ngIf="nivelConfort.hasError('required') && formEnviado"></label>
+    </div>
+
+    <button type="submit">Pedir taxi</button>
+
+
+</form>

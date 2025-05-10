@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+
 export interface Cliente {
   _id?: string;
   nif: string;
@@ -13,7 +14,6 @@ export interface Cliente {
     codigoPostal: string;
     localidad: string;
   };
-  licencia: string;
 }
 
 @Injectable({
@@ -30,5 +30,9 @@ export class ClienteService {
 
     obtenerClienteNIF(nif: string): Observable<Cliente> {
       return this.http.get<Cliente>(`${this.api}/${nif}`);
+    }
+
+    obtenerClienteID(id: string): Observable<Cliente> {
+      return this.http.get<Cliente>(`${this.api}/${id}`);
     }
 }

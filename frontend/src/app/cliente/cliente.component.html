@@ -16,7 +16,7 @@
 </form>
 
 <h2>Registrarse</h2>
-<form (ngSubmit)="onSubmit()" >
+<form #fr="ngForm" (ngSubmit)="onSubmit(fr) " >
     <div>
       <label>NIF</label>
       <input

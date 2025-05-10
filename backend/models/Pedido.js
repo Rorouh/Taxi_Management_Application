@@ -24,11 +24,7 @@ const pedidoSchema = new mongoose.Schema({
 
   numPersonas: { type: Number, required: true, min: 1 },
   estado: { type: String, enum: ['pendiente', 'en progreso', 'completado', 'cancelado'], required: true },
-  conductor: { type: mongoose.Schema.Types.ObjectId, ref: 'Conductor', required: true },
-  distancia: { type: Number, required: true, min: 0 },
-  taxi: { type: mongoose.Schema.Types.ObjectId, ref: 'Taxi', required: true },
-  tiempo: { type: Number, required: true, min: 0 },
-  costo: { type: Number, required: true, min: 0 }
+  confort: { type: String, enum: ['basico','lujoso'], required: true },
 });
 
 module.exports = mongoose.model('Pedido', pedidoSchema);
