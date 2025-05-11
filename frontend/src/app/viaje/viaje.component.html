@@ -1,49 +1,46 @@
 <h2>{{ titulo }}</h2>
 
-<!-- Info básica del viaje -->
 <ul *ngIf="viaje?.pedido">
   <li><b>Origen:</b> {{ viaje.pedido.origen.calle }} – {{ viaje.pedido.origen.localidad }}</li>
   <li><b>Destino:</b> {{ viaje.pedido.destino.calle }} – {{ viaje.pedido.destino.localidad }}</li>
   <li><b>Nº personas:</b> {{ viaje.pedido.numPersonas }}</li>
-  <li><b>Distancia:</b> {{ viaje.pedido.confort }}</li>
+  <li><b>Confort:</b> {{ viaje.pedido.confort }}</li>
   <li><b>Distancia prevista:</b> {{ viaje.pedido.distancia }} km</li>
+  <li><b>Tiempo previsto:</b> {{ viaje.tiempoTotal }} min</li>
   <li><b>Precio estimado:</b> {{ viaje.precio }} €</li>
 </ul>
 
-<!-- Si el cliente ya aceptó pero no hemos empezado -->
+<!-- Iniciar -->
 <div *ngIf="!esperandoCliente && !viajeEnCurso && !viajeTerminado">
   <button (click)="iniciarViaje()">Iniciar viaje</button>
 </div>
 
-<!-- Durante el viaje: permitimos introducir retraso y finalizar -->
-<!-- durante el viaje -->
-<div *ngIf="viajeEnCurso && !viajeTerminado">
-  <label>
-    Minutos de retraso:
-    <input
-      type="number"
-      min="0"
-      [(ngModel)]="delayMinutes"
-    />
+<!-- Durante -->
+<div *ngIf="viajeEnCurso && !viajeTerminado" class="ajustes">
+  <label>Retrasar (min):
+    <input type="number" min="0" [(ngModel)]="delayMinutes" />
   </label>
-  <button type="button" (click)="aplicarRetraso()">
-    Aplicar retraso
-  </button>
-  <button
-    class="terminar"
-    (click)="finalizarViaje()"
-  >
-    Finalizar viaje
-  </button>
+  <button (click)="aplicarRetraso()">+ Retraso</button>
+
+  <label>Adelantar (min):
+    <input type="number" min="0" [(ngModel)]="advanceMinutes" />
+  </label>
+  <button (click)="aplicarAdelanto()">– Adelanto</button>
+
+  <button class="terminar" (click)="finalizarViaje()">Finalizar viaje</button>
 </div>
 
-
-<!-- Una vez finalizado -->
-<div *ngIf="finalizado">
+<!-- Tras finalizar -->
+<div *ngIf="finalizado" class="resumen">
   <p><b>Precio final:</b> {{ viaje.precio }} €</p>
+  <h3>Detalle del viaje completado</h3>
+  <ul>
+    <li><strong>Inicio real:</strong> {{ viaje.inicio | date:'dd/MM/yyyy HH:mm' }}</li>
+    <li><strong>Fin real:</strong> {{ viaje.fin   | date:'dd/MM/yyyy HH:mm' }}</li>
+    <li><strong>Duración total:</strong>
+      {{ ((viaje.fin.getTime() - viaje.inicio.getTime())/60000) | number:'1.0-0' }} min
+    </li>
+    <li><strong>Distancia recorrida:</strong> {{ viaje.pedido.distancia }} km</li>
+    <li><strong>Precio cobrado:</strong> {{ viaje.precio }} €</li>
+  </ul>
 </div>
-
-<!-- Mensaje de confirmación definitiva -->
-<p class="ok" *ngIf="viajeTerminado">
-  El viaje se registró en la base de datos. ¡Buen trabajo!
-</p>
