@@ -31,4 +31,9 @@ export class ViajeService {
   getViajeID(id: string): Observable<any> {
     return this.http.get(`${this.url}/${id}`);
   }
+  // Story 8
+  finalizarViaje(id: string, data: { fin?: string; kilometros: number; precio?: number }): Observable<any> {
+    return this.http.put(`${this.url}/finalizar/${id}`, data);
+  }
+  
 }

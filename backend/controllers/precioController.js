@@ -1,4 +1,3 @@
-
 const Precio = require('../models/Precio');
 
 exports.crearOActualizarPrecio = async (req, res) => {
@@ -39,30 +38,35 @@ exports.simularPrecio = async (req, res) => {
       return res.status(400).json({ error: 'Fechas inválidas: fin debe ser posterior al inicio' });
     }
 
+    // Función auxiliar para minutos entre dos instantes
     const minutosEntre = (a, b) => (b - a) / 60000;
+
     let total = 0;
     let cursor = new Date(start);
 
-    while (cursor < end) {
-      const hora = cursor.getHours() + cursor.getMinutes()/60;
-      let next = new Date(cursor);
+    // Convertimos el incremento de porcentaje a fracción (p.ej. 20 → 0.20)
+    const incFrac = cfg.incrementoNocturno / 100;
 
-      if (hora >= 6 && hora < 21) {
-        next.setHours(21,0,0,0);
+    while (cursor < end) {
+      const horaDec = cursor.getHours() + cursor.getMinutes() / 60;
+      const next = new Date(cursor);
+
+      // Calculamos el siguiente cambio de tarifa (6:00 o 21:00)
+      if (horaDec >= 6 && horaDec < 21) {
+        next.setHours(21, 0, 0, 0);
+      } else if (horaDec < 6) {
+        next.setHours(6, 0, 0, 0);
       } else {
-        if (hora < 6) {
-          next.setHours(6,0,0,0);
-        } else {
-          next.setDate(next.getDate()+1);
-          next.setHours(6,0,0,0);
-        }
+        // horaDec ≥ 21 → pasar al día siguiente a las 6:00
+        next.setDate(next.getDate() + 1);
+        next.setHours(6, 0, 0, 0);
       }
 
       const tramoFin = next < end ? next : end;
       const mins = minutosEntre(cursor, tramoFin);
 
-      const isNocturno = (hora < 6 || hora >= 21);
-      const tarifaMin = cfg.precioMinuto * (isNocturno ? (1 + cfg.incrementoNocturno) : 1);
+      const nocturno = horaDec < 6 || horaDec >= 21;
+      const tarifaMin = cfg.precioMinuto * (nocturno ? (1 + incFrac) : 1);
       total += mins * tarifaMin;
 
       cursor = tramoFin;

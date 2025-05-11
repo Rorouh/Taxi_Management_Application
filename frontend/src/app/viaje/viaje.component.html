@@ -1,2 +1,38 @@
-<h2> {{titulo}}</h2>
+<h2>{{ titulo }}</h2>
 
+<!-- Info básica del viaje -->
+<ul *ngIf="viaje?.pedido">
+  <li><b>Origen:</b> {{ viaje.pedido.origen.calle }} – {{ viaje.pedido.origen.localidad }}</li>
+  <li><b>Destino:</b> {{ viaje.pedido.destino.calle }} – {{ viaje.pedido.destino.localidad }}</li>
+  <li><b>Nº personas:</b> {{ viaje.pedido.numPersonas }}</li>
+  <li><b>Distancia prevista:</b> {{ viaje.pedido.distancia }} km</li>
+  <li><b>Precio estimado:</b> {{ viaje.precio }} €</li>
+  <button class="terminar" (click)="finalizarViaje()">Finalizar viaje</button>
+</ul>
+
+<!-- Botones de control -->
+<div *ngIf="!viajeTerminado">
+  <!-- aparece tras aceptación del cliente -->
+  <button
+    *ngIf="!esperandoCliente && !viajeEnCurso"
+    (click)="iniciarViaje()">
+    Iniciar viaje
+  </button>
+
+  <!-- aparece una vez iniciado -->
+  <button
+    *ngIf="viajeEnCurso"
+    (click)="finalizarViaje()">
+    Finalizar viaje
+  </button>
+</div>
+
+
+<div *ngIf="finalizado">
+  <p>Precio final: {{ viaje.precio }} €</p>
+</div>
+
+<!-- mensaje final -->
+<p class="ok" *ngIf="viajeTerminado">
+  El viaje se registró en la base de datos. ¡Buen trabajo!
+</p>

@@ -9,7 +9,7 @@ export interface Taxi {
   anoCompra: number;
   marca: string;
   modelo: string;
-  nivelConfort: string;
+  nivelConfort: 'basico' | 'lujoso';
 }
 
 @Injectable({

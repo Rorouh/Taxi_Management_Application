@@ -1,28 +1,27 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Pedido, PedidoService } from '../services/pedido.service';
-import { ActivatedRoute } from '@angular/router';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Turno, TurnoService } from '../services/turno.service';
 import { Viaje, ViajeService } from '../services/viaje.service';
-import { PrecioService } from '../services/precio.service';
-import { Simulacion } from '../services/precio.service';
-interface ViajeFront{
-    pedido: string,
-    turno: string,
-    distanciaCliente: number,
-    tiempoTotal: number,
-    inicio: Date,
-    fin: Date
-    precio: number
+import { PrecioService, Simulacion } from '../services/precio.service';
+
+interface ViajeFront {
+  pedido: string;
+  turno: string;
+  distanciaCliente: number;
+  tiempoTotal: number;
+  inicio: Date;
+  fin: Date;
+  precio: number;
 }
+
 @Component({
   selector: 'app-aceptar-pedidos',
   standalone: false,
   templateUrl: './aceptar-pedidos.component.html',
-  styleUrl: './aceptar-pedidos.component.css'
+  styleUrls: ['./aceptar-pedidos.component.css']
 })
-export class AceptarPedidosComponent {
-  
+export class AceptarPedidosComponent implements OnInit {
   viajeFront: ViajeFront = {
     pedido: '',
     turno: '',
@@ -39,136 +38,151 @@ export class AceptarPedidosComponent {
     fin: ''
   };
 
-  lat: number = 38.756734;
-  lng: number = -9.155412;
-  TurnoActual: Turno = {} as Turno;
-  noDisponible: boolean = false;
+  lat = 38.756734;
+  lng = -9.155412;
+
+  turnoActual: Turno | null = null;
+  noDisponible = false;
   viajes: Viaje[] = [];
 
-  constructor(private viajeService: ViajeService,  private precioService: PrecioService,private turnoService: TurnoService, private pedidoService: PedidoService, private route: ActivatedRoute, private router: Router){}
+  constructor(
+    private turnoService: TurnoService,
+    private pedidoService: PedidoService,
+    private precioService: PrecioService,
+    private viajeService: ViajeService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {}
 
-  aceptarPedido(viaje: Viaje){
-    this.viajeFront.pedido = viaje.pedido._id || '';
-    this.viajeFront.turno = viaje.turno._id || '';
-    this.viajeFront.distanciaCliente = viaje.distanciaCliente;
-    this.viajeFront.tiempoTotal = viaje.tiempoTotal;
-    this.viajeFront.inicio = new Date(Date.now());
-    this.viajeFront.fin = viaje.fin;
+  ngOnInit(): void {
+    const nif = this.route.snapshot.paramMap.get('nif') || '';
+    this.turnoService.getTurnosConductor(nif).subscribe(turnos => {
+      // Buscamos el turno en curso
+      this.turnoActual = turnos.find(turno => {
+        const inicio = new Date(turno.inicio).getTime();
+        const fin    = new Date(turno.fin).getTime();
+        return inicio < Date.now() && Date.now() < fin;
+      }) || null;
 
-    this.pedidoService.cambiarEstadoPedido(viaje.pedido._id || '', 'aceptado').subscribe(() => {
-      this.simulacion.inicio = this.viajeFront.inicio.toISOString();
-      this.simulacion.fin = this.viajeFront.fin.toISOString();
-      this.simulacion.nivelConfort = this.TurnoActual.taxi.nivelConfort as 'basico' | 'lujoso';
+      if (!this.turnoActual) {
+        // No hay turno activo
+        this.noDisponible = true;
+        return;
+      }
 
-      this.precioService.simularCoste(this.simulacion).subscribe({
-        next: r => {
-          this.viajeFront.precio = r.coste;
-          this.viajeService.registrarViaje(this.viajeFront).subscribe({
-            next: (viaje) => {
-              this.router.navigate(['/viaje', viaje._id]);
-            },
-            error: (error) => {
-              console.error(error);
-            } 
-          });
-        },
-        error: err => console.log('Error: ' + err.message)
-      })
-    });
-
-
-
-  }
-  ngOnInit(){
-    this.turnoService.getTurnosConductor(this.route.snapshot.paramMap.get('nif') || '')
-      .subscribe(turnos => {
-        for(let turno of turnos){
-          const inicioTurno = new Date(turno.inicio).getTime();
-          const finTurno = new Date(turno.fin).getTime();
-          if(inicioTurno < Date.now() && finTurno > Date.now()){
-            this.TurnoActual = turno;
-            break;
-          }
-        };
-        if(this.TurnoActual == null){
-          this.noDisponible = true;
-          return;
-        }
-        if(!navigator.geolocation) {
-          this.obtenerListaViajes();
-          return;
-        }
+      // Intentamos obtener geolocalización
+      if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-          (position) => {
-            this.lat = position.coords.latitude;
-            this.lng = position.coords.longitude;
-
+          pos => {
+            this.lat = pos.coords.latitude;
+            this.lng = pos.coords.longitude;
             this.obtenerListaViajes();
           },
-          (error) => {
-            console.error(error);
+          err => {
+            console.warn('Geoloc denegada o fallida:', err);
+            // Aunque falle, cargamos igualmente la lista
+            this.obtenerListaViajes();
           }
         );
-
-      });
+      } else {
+        // Si el navegador no soporta geoloc
+        this.obtenerListaViajes();
+      }
+    }, err => {
+      console.error('Error al cargar turnos:', err);
+      this.noDisponible = true;
+    });
   }
 
+  aceptarPedido(v: Viaje): void {
+    // Cambiamos estado del pedido
+    this.pedidoService.cambiarEstadoPedido(v.pedido._id || '', 'aceptado')
+      .subscribe(() => {
+        // Preparamos simulación y viaje
+        this.viajeFront = {
+          pedido: v.pedido._id || '',
+          turno:  v.turno._id || '',
+          distanciaCliente: v.distanciaCliente,
+          tiempoTotal:      v.tiempoTotal,
+          inicio:           new Date(),
+          fin:              v.fin,
+          precio:           0
+        };
 
-  obtenerListaViajes(){
-    this.pedidoService.getPedidosDisponibles(this.TurnoActual.taxi.nivelConfort )
-      .subscribe(pedidos => {
-        const now = Date.now();
-        const finTurno = new Date(this.TurnoActual.fin).getTime();
-        this.viajes = [];
-        for(const pedido of pedidos){
-          const {distancia, tiempo} = this.calcularTiempoCliente(pedido);
-          const tiempoTotal = tiempo + pedido.tiempo;
-          const fechaFin = now + (tiempoTotal * 60 * 1000);
-          if(fechaFin > finTurno){
-            continue;
-          }
-          const viaje = {} as Viaje;
-          viaje.pedido = pedido;
-          viaje.turno = this.TurnoActual;
-          viaje.distanciaCliente = distancia;
-          viaje.tiempoTotal = Math.round(tiempoTotal);
-          viaje.inicio = new Date(now);
-          viaje.fin = new Date(fechaFin);
-          this.viajes.push(viaje);
+        // Nivel confort desde turnoActual (ya garantizado no-null)
+        this.simulacion.nivelConfort = this.turnoActual!.taxi.nivelConfort;
+        this.simulacion.inicio = this.viajeFront.inicio.toISOString();
+        this.simulacion.fin    = this.viajeFront.fin.toISOString();
 
-        }
-        this.viajes.sort((a, b) => a.distanciaCliente - b.distanciaCliente);
-      });
+        // Simular coste
+        this.precioService.simularCoste(this.simulacion).subscribe({
+          next: res => {
+            this.viajeFront.precio = res.coste;
+            // Registrar viaje real
+            this.viajeService.registrarViaje(this.viajeFront).subscribe({
+              next: real => this.router.navigate(['/viaje', real._id]),
+              error: err => console.error('Error al registrar viaje:', err)
+            });
+          },
+          error: err => console.error('Error al simular coste:', err)
+        });
+      }, err => console.error('Error cambiar estado pedido:', err));
   }
 
-  private toRad(x: number) {
+  private obtenerListaViajes(): void {
+    // Protección en caso de turnoActual nulo
+    if (!this.turnoActual) {
+      this.noDisponible = true;
+      return;
+    }
+
+    const nivel = this.turnoActual.taxi.nivelConfort;
+    this.pedidoService.getPedidosDisponibles(nivel).subscribe(pedidos => {
+      const ahora = Date.now();
+      const finTurno = new Date(this.turnoActual!.fin).getTime();
+      this.viajes = [];
+
+      for (const pedido of pedidos) {
+        // Calculamos distancia y tiempo hasta cliente
+        const { distancia, tiempo } = this.calcularTiempoCliente(pedido);
+        const tiempoTotal = tiempo + pedido.tiempo;
+        const finEstimado = ahora + tiempoTotal * 60_000;
+        if (finEstimado > finTurno) continue;
+
+        this.viajes.push({
+          pedido,
+          turno: this.turnoActual!,
+          distanciaCliente: distancia,
+          tiempoTotal:      Math.round(tiempoTotal),
+          inicio:           new Date(ahora),
+          fin:              new Date(finEstimado),
+          precio: 0 // se asigna tras aceptarPedido
+        });
+      }
+
+      // Ordenar de menor a mayor distancia
+      this.viajes.sort((a, b) => a.distanciaCliente - b.distanciaCliente);
+    }, err => {
+      console.error('Error al obtener pedidos disponibles:', err);
+      this.noDisponible = true;
+    });
+  }
+
+  /** Haversine */
+  private toRad(x: number): number {
     return x * Math.PI / 180;
   }
-  calcularTiempoCliente(pedido: Pedido){
-    const R = 6371;
-    const lat1 = pedido.origen.latitud;
-    const lon1 = pedido.origen.longitud;
-    const lat2 = this.lat;
-    const lon2 = this.lng;
 
-    const dLat = this.toRad(lat2 - lat1);
-    const dLon = this.toRad(lon2 - lon1);
-
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(this.toRad(lat1)) *
-      Math.cos(this.toRad(lat2)) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const d = (R * c).toFixed(2);
-    const distancia = Number(d);
-    const tiempo = Math.round(distancia*4);
-
-    return {distancia: distancia, tiempo: tiempo};
+  private calcularTiempoCliente(p: Pedido): { distancia: number; tiempo: number } {
+    const R = 6371; // km
+    const dLat = this.toRad(this.lat - p.origen.latitud);
+    const dLon = this.toRad(this.lng - p.origen.longitud);
+    const a = Math.sin(dLat/2)**2
+            + Math.cos(this.toRad(p.origen.latitud))
+            * Math.cos(this.toRad(this.lat))
+            * Math.sin(dLon/2)**2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const dist = R * c;
+    return { distancia: Number(dist.toFixed(2)), tiempo: Math.round(dist * 4) };
   }
-  
-
-
-
 }

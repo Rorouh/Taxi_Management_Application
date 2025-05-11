@@ -37,4 +37,6 @@ router.post('/pedido/pendientes', pedidoController.getPedidosPendientes);
 router.post('/viaje', viajeController.createViaje);
 router.get('/viaje/pedido/:id', viajeController.getViajeIdPedido);
 router.get('/viaje/:id', viajeController.getViajeID);
+router.put('/viaje/finalizar/:id', viajeController.finalizarViaje);
+
 module.exports = router;

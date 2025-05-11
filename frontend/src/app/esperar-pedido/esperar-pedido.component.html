@@ -1,23 +1,29 @@
+<!-- esperar-pedido.component.html -->
 <div>
-    <h2>Buscando conductores</h2>
-    <ul>
-        <li>Origen: {{pedido.origen.calle}}, {{pedido.origen.numero}}, {{pedido.origen.localidad}}, {{pedido.origen.codigoPostal}} </li>
-        <li>Destino: {{pedido.destino.calle}}, {{pedido.destino.numero}}, {{pedido.destino.localidad}}, {{pedido.destino.codigoPostal}} </li>
-        <li>Nivel de confort: {{pedido.confort}} </li>
-        <li>Distancia: {{pedido.distancia}} km</li>
-        <li>Tiempo Estimado: {{pedido.tiempo}} minutos</li>
-    </ul>
-    <button class="cancelar" (click)="cancelarPedido()">Cancelar Pedido</button>
+  <h2>Buscando conductor…</h2>
+
+  <ul>
+    <li>Origen: {{ pedido.origen.calle }} {{ pedido.origen.numero }}, {{ pedido.origen.localidad }}</li>
+    <li>Destino: {{ pedido.destino.calle }} {{ pedido.destino.numero }}, {{ pedido.destino.localidad }}</li>
+    <li>Confort: {{ pedido.confort }}</li>
+    <li>Distancia: {{ pedido.distancia }} km</li>
+    <li>Tiempo estimado: {{ pedido.tiempo }} min</li>
+  </ul>
+
+  <button class="cancelar" (click)="cancelarPedido()">Cancelar pedido</button>
 </div>
 
-<div *ngIf="conductorEncontrado">
+<!-- solo cuando llega el conductor -->
+<div *ngIf="conductorEncontrado && viaje">
   <h2>Conductor disponible</h2>
   <ul>
     <li>Conductor: {{ viaje.turno.conductor.nombre }}</li>
+    <li>Taxi: {{ viaje.turno.taxi.marca }} {{ viaje.turno.taxi.modelo }}</li>
     <li>Distancia al conductor: {{ viaje.distanciaCliente }} km</li>
-    <li>Tiempo total: {{ viaje.tiempoTotal }} minutos</li>
-    <li>Precio: {{ viaje.precio }}€</li>
+    <li>Tiempo total: {{ viaje.tiempoTotal }} min</li>
+    <li>Precio estimado: {{ viaje.precio }} €</li>
   </ul>
-  <button class="aceptar" (click)="aceptarPedido()">Aceptar Pedido</button>
-  <button class="cancelar" (click)="cancelarPedido()">Cancelar Pedido</button>
+
+  <button class="aceptar" (click)="aceptarPedido()">Aceptar</button>
+  <button class="cancelar" (click)="cancelarPedido()">Rechazar</button>
 </div>
