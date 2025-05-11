@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 export interface Precio {
   nivelConfort: 'basico' | 'lujoso';
   precioMinuto: number;
-  incrementoNocturno: number;   // 0.2 -> 20%
+  incrementoNocturno: number;   
 }
 
 export interface Simulacion {

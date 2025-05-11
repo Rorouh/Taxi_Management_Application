@@ -12,6 +12,7 @@ import { ClienteComponent } from './cliente/cliente.component';
 import { PedidoComponent } from './pedido/pedido.component';
 import { EsperarPedidoComponent } from './esperar-pedido/esperar-pedido.component';
 import { AceptarPedidosComponent } from './aceptar-pedidos/aceptar-pedidos.component';
+import { ViajeComponent } from './viaje/viaje.component';
 const routes: Routes = [
   { path: '',           redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'dashboard',  component: DashboardComponent },
@@ -25,6 +26,7 @@ const routes: Routes = [
   {path: 'pedido/:nif', component: PedidoComponent},
   {path: 'esperar-pedido/:id', component: EsperarPedidoComponent},
   {path: 'aceptar-pedidos/:nif', component: AceptarPedidosComponent},
+  {path: 'viaje/:id', component: ViajeComponent},
   { path: '**',         redirectTo: 'dashboard' }
 ];
 

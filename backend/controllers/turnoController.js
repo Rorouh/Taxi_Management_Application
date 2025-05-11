@@ -1,4 +1,4 @@
-const Turno = require('../models/Turno');
+const Turno = require('../models/turno');
 const Conductor = require('../models/Conductor');
 const Taxi = require('../models/Taxi');
 

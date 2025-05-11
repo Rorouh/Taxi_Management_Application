@@ -4,13 +4,16 @@ import { ActivatedRoute } from '@angular/router';
 import { Router } from '@angular/router';
 import { Turno, TurnoService } from '../services/turno.service';
 import { Viaje, ViajeService } from '../services/viaje.service';
+import { PrecioService } from '../services/precio.service';
+import { Simulacion } from '../services/precio.service';
 interface ViajeFront{
     pedido: string,
     turno: string,
     distanciaCliente: number,
-    tiempototal: number,
+    tiempoTotal: number,
     inicio: Date,
     fin: Date
+    precio: number
 }
 @Component({
   selector: 'app-aceptar-pedidos',
@@ -24,9 +27,16 @@ export class AceptarPedidosComponent {
     pedido: '',
     turno: '',
     distanciaCliente: 0,
-    tiempototal: 0,
+    tiempoTotal: 0,
     inicio: new Date(),
-    fin: new Date()
+    fin: new Date(),
+    precio: 0
+  };
+
+  simulacion: Simulacion = {
+    nivelConfort: 'basico',
+    inicio: '',
+    fin: ''
   };
 
   lat: number = 38.756734;
@@ -35,26 +45,39 @@ export class AceptarPedidosComponent {
   noDisponible: boolean = false;
   viajes: Viaje[] = [];
 
-  constructor(private viajeService: ViajeService,private turnoService: TurnoService, private pedidoService: PedidoService, private route: ActivatedRoute, private router: Router){}
+  constructor(private viajeService: ViajeService,  private precioService: PrecioService,private turnoService: TurnoService, private pedidoService: PedidoService, private route: ActivatedRoute, private router: Router){}
 
   aceptarPedido(viaje: Viaje){
     this.viajeFront.pedido = viaje.pedido._id || '';
     this.viajeFront.turno = viaje.turno._id || '';
     this.viajeFront.distanciaCliente = viaje.distanciaCliente;
-    this.viajeFront.tiempototal = viaje.tiempoTotal;
+    this.viajeFront.tiempoTotal = viaje.tiempoTotal;
     this.viajeFront.inicio = new Date(Date.now());
     this.viajeFront.fin = viaje.fin;
-    this.pedidoService.cambiarEstadoPedido(viaje.pedido._id || '', 'en progreso').subscribe(() => {
 
+    this.pedidoService.cambiarEstadoPedido(viaje.pedido._id || '', 'aceptado').subscribe(() => {
+      this.simulacion.inicio = this.viajeFront.inicio.toISOString();
+      this.simulacion.fin = this.viajeFront.fin.toISOString();
+      this.simulacion.nivelConfort = this.TurnoActual.taxi.nivelConfort as 'basico' | 'lujoso';
+
+      this.precioService.simularCoste(this.simulacion).subscribe({
+        next: r => {
+          this.viajeFront.precio = r.coste;
+          this.viajeService.registrarViaje(this.viajeFront).subscribe({
+            next: (viaje) => {
+              this.router.navigate(['/viaje', viaje._id]);
+            },
+            error: (error) => {
+              console.error(error);
+            } 
+          });
+        },
+        error: err => console.log('Error: ' + err.message)
+      })
     });
-    this.viajeService.registrarViaje(this.viajeFront).subscribe({
-      next: (viaje) => {
-        this.router.navigate(['/viaje', viaje._id]);
-      },
-      error: (error) => {
-        console.error(error);
-      } 
-    });
+
+
+
   }
   ngOnInit(){
     this.turnoService.getTurnosConductor(this.route.snapshot.paramMap.get('nif') || '')

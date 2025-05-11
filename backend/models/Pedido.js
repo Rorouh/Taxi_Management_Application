@@ -22,7 +22,7 @@ const pedidoSchema = new mongoose.Schema({
     longitud: { type: Number, required: true }
   },
   numPersonas: { type: Number, required: true, min: 1 },
-  estado: { type: String, enum: ['pendiente', 'en progreso', 'completado', 'cancelado'], required: true },
+  estado: { type: String, enum: ['pendiente', 'aceptado', 'en progreso', 'completado', 'cancelado'], required: true },
   confort: { type: String, enum: ['basico','lujoso'], required: true },
   distancia: { type: Number, required: true },
   tiempo: { type: Number, required: true }

@@ -11,6 +11,7 @@ export interface Viaje {
   tiempoTotal: number;
   inicio: Date;
   fin: Date;
+  precio: number;
 }
 @Injectable({
   providedIn: 'root'
@@ -25,5 +26,9 @@ export class ViajeService {
 
   getViajeIdPedido(id: string): Observable<any> {
     return this.http.get(`${this.url}/pedido/${id}`);
+  }
+
+  getViajeID(id: string): Observable<any> {
+    return this.http.get(`${this.url}/${id}`);
   }
 }

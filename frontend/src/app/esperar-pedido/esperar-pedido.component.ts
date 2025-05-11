@@ -12,7 +12,9 @@ import { Viaje, ViajeService } from '../services/viaje.service';
 export class EsperarPedidoComponent  implements OnInit{
   pedido: Pedido = {} as Pedido;
   viaje: Viaje = {} as Viaje;
-  
+  conductorEncontrado: boolean = false;
+
+  private poller: any;
 
   constructor(private viajeService: ViajeService,private pedidoService: PedidoService, private route: ActivatedRoute, private router: Router){}
   
@@ -25,23 +27,29 @@ export class EsperarPedidoComponent  implements OnInit{
       error: err => console.error(err)
     });
 
-    const poller = setInterval(() => {
+    this.poller = setInterval(() => {
       this.pedidoService.getPedidoId(id).subscribe({
         next: p => {
           this.pedido = p;
-          if (p.estado !== 'pendiente') {
+          if (p.estado === 'aceptado') {
             this.viajeService.getViajeIdPedido(id).subscribe({
               next: v => {
                 this.viaje = v;
+                this.conductorEncontrado = true;
               },
               error: err => console.error(err)
             })
-            clearInterval(poller);  
+            clearInterval(this.poller);  
           }
         },
         error: err => console.error('Error en polling:', err)
       });
     }, 5000);
+  }
+
+  ngOnDestroy() {
+    clearInterval(this.poller);
+    this.cancelarPedido();
   }
 
   
@@ -56,7 +64,14 @@ export class EsperarPedidoComponent  implements OnInit{
     });
   }
 
-
+  aceptarPedido() {
+    this.pedidoService.cambiarEstadoPedido(this.pedido._id || '', 'en progreso').subscribe({
+      next: () => {
+        this.pedido.estado = 'en progreso';
+      },
+      error: err => console.error(err)
+    });
+  }
 }
 
   
