@@ -37,24 +37,23 @@ export class PrecioConfigComponent implements OnInit {
   cargarPrecios(): void {
     this.precioService.obtenerPrecios().subscribe({
       next: list => this.preciosExistentes = list,
-      error: err => alert('Error cargando precios: ' + err.message)
+      error: err => console.log('Error cargando precios: ' + err.message)
     });
   }
 
   guardarPrecio(): void {
     this.precioService.registrarPrecio(this.precio).subscribe({
       next: () => {
-        alert('Precio guardado!');
         this.cargarPrecios();
       },
-      error: err => alert('Error: ' + err.message)
+      error: err => console.log('Error guardando precio: ' + err.message)
     });
   }
 
   simularCoste(): void {
     this.precioService.simularCoste(this.simulacion).subscribe({
       next: r => this.resultado = r.coste,
-      error: err => alert('Error: ' + err.message)
+      error: err => console.log('Error simulando coste: ' + err.message)
     });
   }
 }

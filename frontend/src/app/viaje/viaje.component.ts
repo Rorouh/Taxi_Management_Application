@@ -78,7 +78,7 @@ export class ViajeComponent implements OnInit, OnDestroy {
 
     this.viajeSrv.finalizarViaje(this.viaje._id || '', {
       kilometros: km,
-      fin: finAjustado.toISOString()
+      fin: finAjustado.toISOString(),
     }).subscribe({
       next: (v) => {
         this.viaje      = v;
