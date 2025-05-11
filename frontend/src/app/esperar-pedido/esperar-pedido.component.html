@@ -9,3 +9,14 @@
     </ul>
     <button class="cancelar" (click)="cancelarPedido()">Cancelar Pedido</button>
 </div>
+
+<div *ngIf="pedido.estado != 'cancelado'">
+    <h2>Conductor disponible</h2>
+    <ul>
+        <li>Conductor: {{viaje.turno.conductor.nombre}}</li>
+        <li>Distancia al conductor: {{viaje.distanciaCliente}}</li>
+        <li>Tiempo tiempo total: {{viaje.tiempoTotal}}</li>
+
+    </ul>
+    <button class="aceptar" (click)="">Aceptar Pedido</button>
+</div>

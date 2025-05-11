@@ -72,6 +72,7 @@ export class PedidoComponent implements OnInit, AfterViewInit {
 
   cliente!: Cliente;
   map!: any;
+  mapOrigen!: any;
   idPedido: string = '';
   formEnviado: boolean = false;
   constructor(private clienteService: ClienteService, private pedidoService: PedidoService, private route: ActivatedRoute, private router: Router) { }
@@ -114,6 +115,14 @@ export class PedidoComponent implements OnInit, AfterViewInit {
       this.pedido.origen.latitud = position.coords.latitude;
       this.pedido.origen.longitud = position.coords.longitude;
 
+      this.mapOrigen = L.map('mapOrigen').setView([this.pedido.origen.latitud, this.pedido.origen.longitud], 13);
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }).addTo(this.mapOrigen);
+
+      this.mapOrigen.on('click', (e: any) => this.setOrigen(e));
+
       this.map = L.map('mapDestino').setView([this.pedido.origen.latitud, this.pedido.origen.longitud], 13);
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       maxZoom: 19,
@@ -139,8 +148,9 @@ export class PedidoComponent implements OnInit, AfterViewInit {
 
   }
 
+
+
   setDestino(e : any){
-    console.log(e.latlng);
     const {lat , lng} = e.latlng;
     this.pedido.destino.latitud = lat;
     this.pedido.destino.longitud = lng;
@@ -151,7 +161,19 @@ export class PedidoComponent implements OnInit, AfterViewInit {
       this.pedido.destino.localidad = data.address.city;
       this.pedido.destino.codigoPostal = data.address.postcode;
     })
+  }
 
+  setOrigen(e : any){
+    const {lat , lng} = e.latlng;
+    this.pedido.origen.latitud = lat;
+    this.pedido.origen.longitud = lng;
+    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${this.pedido.origen.latitud}&lon=${this.pedido.origen.longitud}&zoom=18&addressdetails=1`;
+    fetch(url).then(response => response.json()).then(data => {
+      this.pedido.origen.calle = data.address.road;
+      this.pedido.origen.numero = data.address.house_number;
+      this.pedido.origen.localidad = data.address.city;
+      this.pedido.origen.codigoPostal = data.address.postcode;
+    })
   }
 
   cambiarLocalidadOrigen(codP: string) {

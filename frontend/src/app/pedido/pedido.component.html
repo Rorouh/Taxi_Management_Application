@@ -1,6 +1,7 @@
 <h2> Bienvenido, {{cliente.nombre}}</h2>
 <form  #fp="ngForm" (ngSubmit)="onSubmit(fp)">
 <legend>Origen</legend>
+    <div id="mapOrigen" style="height: 300px; margin-bottom:1rem;"></div>
     <div>
       <label>Calle</label>
       <input

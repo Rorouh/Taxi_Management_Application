@@ -10,3 +10,8 @@ exports.createViaje = async (req, res) => {
     await viaje.save();
     res.json(viaje);
 }
+
+exports.getViajeIdPedido = async (req, res) => {
+    const viaje = await Viaje.findOne({ pedido: req.params.id });
+    res.json(viaje);
+}

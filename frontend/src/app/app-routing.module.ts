@@ -18,7 +18,7 @@ const routes: Routes = [
   { path: 'taxi',       component: TaxiComponent },
   { path: 'conductor',  component: ConductorComponent },
   { path: 'precio',     component: PrecioConfigComponent },
-  { path: 'iniciarSesion', component: IniciarSesionComponent },
+  { path: 'iniciar-sesion', component: IniciarSesionComponent },
   {path: 'menu/:nif', component: MenuComponent},
   {path: 'turno/:nif', component: TurnoComponent},
   {path: 'cliente', component: ClienteComponent},

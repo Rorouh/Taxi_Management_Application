@@ -22,4 +22,8 @@ export class ViajeService {
   registrarViaje(viaje: any): Observable<any> {
     return this.http.post(this.url, viaje);
   }
+
+  getViajeIdPedido(id: string): Observable<any> {
+    return this.http.get(`${this.url}/pedido/${id}`);
+  }
 }

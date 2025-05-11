@@ -35,4 +35,5 @@ router.post('/pedido/cambiar-estado/:id', pedidoController.cambiarEstadoPedido);
 router.post('/pedido/pendientes', pedidoController.getPedidosPendientes);
 
 router.post('/viaje', viajeController.createViaje);
+router.get('/viaje/pedido/:id', viajeController.getViajeIdPedido);
 module.exports = router;

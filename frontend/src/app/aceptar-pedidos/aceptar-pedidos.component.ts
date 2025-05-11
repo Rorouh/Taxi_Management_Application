@@ -19,6 +19,7 @@ interface ViajeFront{
   styleUrl: './aceptar-pedidos.component.css'
 })
 export class AceptarPedidosComponent {
+  
   viajeFront: ViajeFront = {
     pedido: '',
     turno: '',
@@ -27,6 +28,7 @@ export class AceptarPedidosComponent {
     inicio: new Date(),
     fin: new Date()
   };
+
   lat: number = 38.756734;
   lng: number = -9.155412;
   TurnoActual: Turno = {} as Turno;
@@ -45,9 +47,13 @@ export class AceptarPedidosComponent {
     this.pedidoService.cambiarEstadoPedido(viaje.pedido._id || '', 'en progreso').subscribe(() => {
 
     });
-    this.viajeService.registrarViaje(this.viajeFront).subscribe(() => {
-      
-      this.router.navigate(['viajes']);
+    this.viajeService.registrarViaje(this.viajeFront).subscribe({
+      next: (viaje) => {
+        this.router.navigate(['/viaje', viaje._id]);
+      },
+      error: (error) => {
+        console.error(error);
+      } 
     });
   }
   ngOnInit(){

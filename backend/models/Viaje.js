@@ -8,8 +8,10 @@ const viajeSchema = new mongoose.Schema({
     turno: { type: mongoose.Schema.Types.ObjectId, ref: 'Turno', required: true },
     distanciaCliente: { type: Number, required: true },
     tiempototal: { type: Number, required: true },
+    distanciaTotal: { type: Number, required: true },
     inicio : { type: Date, required: true },
-    fin : { type: Date, required: true }
+    fin : { type: Date, required: true },
+    precio: { type: Number, required: true },
 });
 
 
