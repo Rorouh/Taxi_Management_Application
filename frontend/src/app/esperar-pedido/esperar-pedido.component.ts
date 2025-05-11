@@ -1,3 +1,4 @@
+// src/app/esperar-pedido/esperar-pedido.component.ts
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
 import { switchMap } from 'rxjs/operators';
@@ -8,13 +9,12 @@ import { Viaje, ViajeService   } from '../services/viaje.service';
 
 @Component({
   selector   : 'app-esperar-pedido',
-  standalone: false,
+  standalone : false,
   templateUrl: './esperar-pedido.component.html',
   styleUrls  : ['./esperar-pedido.component.css']
 })
 export class EsperarPedidoComponent implements OnInit, OnDestroy {
 
-  /** placeholders seguros para que el HTML no “rompa” */
   pedido: Pedido = {
     _id        : '',
     cliente    : {} as any,
@@ -30,7 +30,7 @@ export class EsperarPedidoComponent implements OnInit, OnDestroy {
   viaje: Viaje | null = null;
   conductorEncontrado = false;
 
-  private sub?: Subscription;   // para cancelar polling
+  private sub?: Subscription;
 
   constructor(
     private pedidoSrv : PedidoService,
@@ -41,13 +41,14 @@ export class EsperarPedidoComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id')!;
-    /* 1 · cargamos una sola vez el pedido */
+
+    // 1. Cargar pedido una vez
     this.pedidoSrv.getPedidoId(id).subscribe({
       next : p   =>  this.pedido = p,
       error: err =>  console.error(err)
     });
 
-    /* 2 · empezamos polling cada 5 s */
+    // 2. Polling cada 5s hasta que el pedido sea 'aceptado'
     this.sub = interval(5000).pipe(
       switchMap(() => this.pedidoSrv.getPedidoId(id))
     ).subscribe({
@@ -63,35 +64,39 @@ export class EsperarPedidoComponent implements OnInit, OnDestroy {
 
   private obtenerViaje(id: string): void {
     this.viajeSrv.getViajeIdPedido(id).subscribe({
-      next : v => {
+      next: v => {
+        // recalcular minutos totales entre inicio y fin
+        const inicioMs = new Date(v.inicio).getTime();
+        const finMs    = new Date(v.fin).getTime();
+        v.tiempoTotal  = Math.round((finMs - inicioMs) / 60000);
+
         this.viaje = v;
         this.conductorEncontrado = true;
-        this.sub?.unsubscribe();           // detenemos polling
+        this.sub?.unsubscribe();
       },
       error: err => console.error(err)
     });
   }
 
   ngOnDestroy(): void {
-    this.sub?.unsubscribe();               // detenemos polling
+    this.sub?.unsubscribe();
+    // si el usuario cierra antes de que se acepte, auto-cancel
     if (this.pedido.estado === 'pendiente') {
-      this.cancelarPedido();               // auto-cancel si usuario cierra pestaña
+      this.cancelarPedido();
     }
   }
 
   cancelarPedido(): void {
-    this.pedidoSrv.cambiarEstadoPedido(this.pedido._id || '', 'cancelado')
-      .subscribe({
-        next : () => this.router.navigate(['/pedido', this.pedido.cliente.nif]),
-        error: err  => console.error(err)
-      });
+    this.pedidoSrv.cambiarEstadoPedido(this.pedido._id || '', 'cancelado').subscribe({
+      next : () => this.router.navigate(['/pedido', this.pedido.cliente.nif]),
+      error: err  => console.error(err)
+    });
   }
 
   aceptarPedido(): void {
-    this.pedidoSrv.cambiarEstadoPedido(this.pedido._id || '', 'en progreso')
-      .subscribe({
-        next : ()   => this.pedido.estado = 'en progreso',
-        error: err  => console.error(err)
-      });
+    this.pedidoSrv.cambiarEstadoPedido(this.pedido._id || '', 'en progreso').subscribe({
+      next : ()   => this.pedido.estado = 'en progreso',
+      error: err  => console.error(err)
+    });
   }
 }

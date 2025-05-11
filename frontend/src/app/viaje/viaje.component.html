@@ -7,32 +7,42 @@
   <li><b>Nº personas:</b> {{ viaje.pedido.numPersonas }}</li>
   <li><b>Distancia prevista:</b> {{ viaje.pedido.distancia }} km</li>
   <li><b>Precio estimado:</b> {{ viaje.precio }} €</li>
-  <button class="terminar" (click)="finalizarViaje()">Finalizar viaje</button>
 </ul>
 
-<!-- Botones de control -->
-<div *ngIf="!viajeTerminado">
-  <!-- aparece tras aceptación del cliente -->
-  <button
-    *ngIf="!esperandoCliente && !viajeEnCurso"
-    (click)="iniciarViaje()">
-    Iniciar viaje
-  </button>
+<!-- Si el cliente ya aceptó pero no hemos empezado -->
+<div *ngIf="!esperandoCliente && !viajeEnCurso && !viajeTerminado">
+  <button (click)="iniciarViaje()">Iniciar viaje</button>
+</div>
 
-  <!-- aparece una vez iniciado -->
+<!-- Durante el viaje: permitimos introducir retraso y finalizar -->
+<!-- durante el viaje -->
+<div *ngIf="viajeEnCurso && !viajeTerminado">
+  <label>
+    Minutos de retraso:
+    <input
+      type="number"
+      min="0"
+      [(ngModel)]="delayMinutes"
+    />
+  </label>
+  <button type="button" (click)="aplicarRetraso()">
+    Aplicar retraso
+  </button>
   <button
-    *ngIf="viajeEnCurso"
-    (click)="finalizarViaje()">
+    class="terminar"
+    (click)="finalizarViaje()"
+  >
     Finalizar viaje
   </button>
 </div>
 
 
+<!-- Una vez finalizado -->
 <div *ngIf="finalizado">
-  <p>Precio final: {{ viaje.precio }} €</p>
+  <p><b>Precio final:</b> {{ viaje.precio }} €</p>
 </div>
 
-<!-- mensaje final -->
+<!-- Mensaje de confirmación definitiva -->
 <p class="ok" *ngIf="viajeTerminado">
   El viaje se registró en la base de datos. ¡Buen trabajo!
 </p>

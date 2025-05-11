@@ -62,20 +62,23 @@ exports.getViajeID = async (req, res) => {
 };
 
 //Storry 8
+// controllers/viajeController.js
+
 exports.finalizarViaje = async (req, res) => {
     try {
-      const { fin, kilometros, precio } = req.body;   // datos que llega del front
-      const viaje  = await Viaje.findById(req.params.id).populate('pedido');
+      const { fin, kilometros, precio } = req.body;
+      const viaje = await Viaje.findById(req.params.id).populate('pedido');
       if (!viaje) return res.status(404).json({ error: 'Viaje no encontrado' });
   
-      // solo se puede cerrar una vez
-      if (viaje.fin) return res.status(400).json({ error: 'El viaje ya está finalizado' });
-  
-      viaje.fin        = fin ? new Date(fin) : new Date(); // si no mandan fecha usamos ahora
+      // Eliminamos la validación de "si viaje.fin ya existe"
+      // viaje.fin siempre existe para la fecha prevista,
+      // así que simplemente actualizamos con la hora real y km.
+      viaje.fin        = fin ? new Date(fin) : new Date();
       viaje.kilometros = kilometros ?? viaje.kilometros;
-      viaje.precio     = precio     ?? viaje.precio;            
+      viaje.precio     = precio     ?? viaje.precio;
       await viaje.save();
   
+      // Cambiamos el estado del pedido a 'completado'
       viaje.pedido.estado = 'completado';
       await viaje.pedido.save();
   
@@ -84,3 +87,4 @@ exports.finalizarViaje = async (req, res) => {
       res.status(400).json({ error: e.message });
     }
   };
+  
