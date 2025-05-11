@@ -1,0 +1,10 @@
+<h2>Pedidos disponibles</h2>
+<form >
+    <li *ngIf ="viajes.length == 0 || noDisponible" >No hay pedidos disponibles o no estas en un turno ahora mismo</li>
+    <li *ngFor="let v of viajes">
+        <button class="lista" (click)="aceptarPedido(v)">
+            {{v.pedido.origen.calle}} {{v.pedido.origen.localidad}} - {{v.pedido.destino.calle}} {{v.pedido.destino.localidad}}
+            - Personas:  {{v.pedido.numPersonas}}, {{v.distanciaCliente}} km, {{v.tiempoTotal}} min
+        </button>
+    </li>
+</form>

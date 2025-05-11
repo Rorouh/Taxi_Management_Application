@@ -185,9 +185,9 @@ export class PedidoComponent implements OnInit, AfterViewInit {
       Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    
-    this.pedido.distancia = R * c;
-    this.pedido.tiempo = this.pedido.distancia*4;
+    const d = (R * c).toFixed(2);
+    this.pedido.distancia = Number(d);
+    this.pedido.tiempo = Math.round(this.pedido.distancia*4);
   }
   
 

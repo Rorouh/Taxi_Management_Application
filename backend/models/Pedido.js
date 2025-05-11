@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
-const Cliente = require('./cliente');
+const Cliente = require('./Cliente');
 const Conductor = require('./Conductor');
-const taxi = require('./taxi');
+const taxi = require('./Taxi');
 
 const pedidoSchema = new mongoose.Schema({
   cliente: { type: mongoose.Schema.Types.ObjectId, ref: 'Cliente', required: true },

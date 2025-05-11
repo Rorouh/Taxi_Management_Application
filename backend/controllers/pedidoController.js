@@ -1,6 +1,6 @@
-const Pedido = require('../models/pedido');
+const Pedido = require('../models/Pedido');
 
-// 1) Crear pedido
+
 exports.createPedido = async (req, res) => {
   try {
     const pedido = new Pedido(req.body);
@@ -11,10 +11,11 @@ exports.createPedido = async (req, res) => {
   }
 };
 
-// 2) Listar pedidos pendientes (para futuras US)
+
 exports.getPedidosPendientes = async (req, res) => {
   try {
-    const list = await Pedido.find({ estado: 'pendiente' })
+    const confort = req.body.confort;
+    const list = await Pedido.find({ estado: 'pendiente', confort })
       .populate('cliente')
     res.json(list);
   } catch (e) {
@@ -28,6 +29,20 @@ exports.getPedidoID = async (req, res) => {
     if (!pedido) {
       return res.status(404).json({ error: 'Pedido no encontrado' });
     }
+    res.status(200).json(pedido);
+  } catch (e) {
+    res.status(400).json({ error: e.message });
+  }
+};
+
+exports.cambiarEstadoPedido = async (req, res) => {
+  try {
+    const pedido = await Pedido.findById(req.params.id);
+    if (!pedido) {
+      return res.status(404).json({ error: 'Pedido no encontrado' });
+    }
+    pedido.estado = req.body.estado;
+    await pedido.save();
     res.status(200).json(pedido);
   } catch (e) {
     res.status(400).json({ error: e.message });

@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { Pedido, PedidoService } from '../services/pedido.service';
 import {PedidoFront} from '../pedido/pedido.component';
 import { ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-esperar-pedido',
   standalone: false,
@@ -9,9 +10,10 @@ import { ActivatedRoute } from '@angular/router';
   styleUrl: './esperar-pedido.component.css'
 })
 export class EsperarPedidoComponent  implements OnInit{
-  pedido!: Pedido;
+  pedido: Pedido = {} as Pedido;
+  
 
-  constructor(private pedidoService: PedidoService, private route: ActivatedRoute){}
+  constructor(private pedidoService: PedidoService, private route: ActivatedRoute, private router: Router){}
   
 
   ngOnInit() {
@@ -22,6 +24,16 @@ export class EsperarPedidoComponent  implements OnInit{
         error: err => console.error(err)
       });
     }
+  }
+
+  cancelarPedido() {
+    this.pedidoService.cambiarEstadoPedido(this.pedido._id || '', 'cancelado').subscribe({
+      next: () => {
+        this.pedido.estado = 'cancelado';
+        this.router.navigate(['/pedido', this.pedido.cliente.nif]);
+      },
+      error: err => console.error(err)
+    });
   }
 }
 

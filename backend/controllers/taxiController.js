@@ -1,4 +1,4 @@
-const Taxi = require('../models/taxi');
+const Taxi = require('../models/Taxi');
 
 exports.createTaxi = async (req, res) => {
     try {

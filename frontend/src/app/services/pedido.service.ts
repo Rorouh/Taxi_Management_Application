@@ -6,7 +6,7 @@ import { Conductor } from './conductor.service';
 
 
 export interface Pedido {
-  id?: string;
+  _id?: string;
   cliente: Cliente,
   origen:{
     calle: string;
@@ -45,5 +45,13 @@ export class PedidoService {
 
   getPedidoId(id: string): Observable<any> {
     return this.http.get<any>(`${this.url}/${id}`);
+  }
+
+  cambiarEstadoPedido(id: string, estado: string): Observable<any> {
+    return this.http.post<any>(`${this.url}/cambiar-estado/${id}`, { estado });
+  }
+
+  getPedidosDisponibles(confort: string): Observable<any[]> {
+    return this.http.post<any[]>(`${this.url}/pendientes`, { confort });
   }
 }

@@ -5,6 +5,7 @@ import { Taxi } from './taxi.service';
 import { Conductor } from './conductor.service';
 
 export interface Turno {
+  _id: string;
   inicio: Date;
   fin: Date;
   taxi: Taxi;

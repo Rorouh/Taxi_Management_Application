@@ -1,6 +1,6 @@
 const Turno = require('../models/Turno');
 const Conductor = require('../models/Conductor');
-const Taxi = require('../models/taxi');
+const Taxi = require('../models/Taxi');
 
 
 exports.getTurnos = async (req, res) => {
@@ -94,6 +94,8 @@ exports.getTaxisDisponibles = async (req, res) => {
         res.status(400).json({ error: error.message });
     }
 };
+
+
 
 
 

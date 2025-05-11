@@ -15,6 +15,7 @@ import { TurnoComponent } from './turno/turno.component';
 import { ClienteComponent } from './cliente/cliente.component';
 import { PedidoComponent } from './pedido/pedido.component';
 import { EsperarPedidoComponent } from './esperar-pedido/esperar-pedido.component';
+import { AceptarPedidosComponent } from './aceptar-pedidos/aceptar-pedidos.component';
 
 @NgModule({
   declarations: [
@@ -29,6 +30,7 @@ import { EsperarPedidoComponent } from './esperar-pedido/esperar-pedido.componen
     ClienteComponent,
     PedidoComponent,
     EsperarPedidoComponent,
+    AceptarPedidosComponent,
   ],
   imports: [
     BrowserModule,

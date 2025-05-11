@@ -1,9 +1,11 @@
 <div>
     <h2>Buscando conductores</h2>
-    <legend>Pedido</legend>
     <ul>
         <li>Origen: {{pedido.origen.calle}}, {{pedido.origen.numero}}, {{pedido.origen.localidad}}, {{pedido.origen.codigoPostal}} </li>
         <li>Destino: {{pedido.destino.calle}}, {{pedido.destino.numero}}, {{pedido.destino.localidad}}, {{pedido.destino.codigoPostal}} </li>
+        <li>Nivel de confort: {{pedido.confort}} </li>
+        <li>Distancia: {{pedido.distancia}} km</li>
+        <li>Tiempo Estimado: {{pedido.tiempo}} minutos</li>
     </ul>
-
+    <button class="cancelar" (click)="cancelarPedido()">Cancelar Pedido</button>
 </div>
