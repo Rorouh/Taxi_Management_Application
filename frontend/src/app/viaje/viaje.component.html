@@ -1,18 +1,19 @@
 <h2>{{ titulo }}</h2>
 
 <ul *ngIf="viaje?.pedido">
-  <li><b>Origen:</b> {{ viaje.pedido.origen.calle }} – {{ viaje.pedido.origen.localidad }}</li>
-  <li><b>Destino:</b> {{ viaje.pedido.destino.calle }} – {{ viaje.pedido.destino.localidad }}</li>
-  <li><b>Nº personas:</b> {{ viaje.pedido.numPersonas }}</li>
-  <li><b>Confort:</b> {{ viaje.pedido.confort }}</li>
-  <li><b>Distancia prevista:</b> {{ viaje.pedido.distancia }} km</li>
-  <li><b>Tiempo previsto:</b> {{ viaje.tiempoTotal }} min</li>
-  <li><b>Precio estimado:</b> {{ viaje.precio }} €</li>
+  <li>Origen: {{ viaje.pedido.origen.calle }} – {{ viaje.pedido.origen.localidad }}</li>
+  <li>Destino: {{ viaje.pedido.destino.calle }} – {{ viaje.pedido.destino.localidad }}</li>
+  <li>Nº personas: {{ viaje.pedido.numPersonas }}</li>
+  <li>Confort: {{ viaje.pedido.confort }}</li>
+  <li>Distancia a cliente: {{ viaje.distanciaCliente }} km</li>
+  <li>Distancia prevista: {{ viaje.pedido.distancia }} km</li>
+  <li>Tiempo previsto: {{ viaje.tiempoTotal }} min</li>
+  <li>Precio estimado: {{ viaje.precio }} €</li>
 </ul>
 
 <!-- Iniciar -->
 <div *ngIf="!esperandoCliente && !viajeEnCurso && !viajeTerminado">
-  <button (click)="iniciarViaje()">Iniciar viaje</button>
+  <button class="aceptar" (click)="iniciarViaje()">Iniciar viaje</button>
 </div>
 
 <!-- Durante -->
@@ -20,27 +21,27 @@
   <label>Retrasar (min):
     <input type="number" min="0" [(ngModel)]="delayMinutes" />
   </label>
-  <button (click)="aplicarRetraso()">+ Retraso</button>
+  <button type ="button" class ="aceptar" (click)="aplicarRetraso()">+ Retraso</button>
 
   <label>Adelantar (min):
     <input type="number" min="0" [(ngModel)]="advanceMinutes" />
   </label>
-  <button (click)="aplicarAdelanto()">– Adelanto</button>
+  <button  type="button" class= "aceptar" (click)="aplicarAdelanto()">– Adelanto</button>
 
-  <button class="terminar" (click)="finalizarViaje()">Finalizar viaje</button>
+  <button type="button" class="aceptar" (click)="finalizarViaje()">Finalizar viaje</button>
+
 </div>
 
 <!-- Tras finalizar -->
 <div *ngIf="finalizado" class="resumen">
-  <p><b>Precio final:</b> {{ viaje.precio }} €</p>
-  <h3>Detalle del viaje completado</h3>
+  <h2>Detalle del viaje completado</h2>
   <ul>
-    <li><strong>Inicio real:</strong> {{ viaje.inicio | date:'dd/MM/yyyy HH:mm' }}</li>
-    <li><strong>Fin real:</strong> {{ viaje.fin   | date:'dd/MM/yyyy HH:mm' }}</li>
-    <li><strong>Duración total:</strong>
+    <li>Inicio real: {{ viaje.inicio | date:'dd/MM/yyyy HH:mm' }}</li>
+    <li>Fin real: {{ viaje.fin   | date:'dd/MM/yyyy HH:mm' }}</li>
+    <li>Duración total:
       {{ ((viaje.fin.getTime() - viaje.inicio.getTime())/60000) | number:'1.0-0' }} min
     </li>
-    <li><strong>Distancia recorrida:</strong> {{ viaje.pedido.distancia }} km</li>
-    <li><strong>Precio cobrado:</strong> {{ viaje.precio }} €</li>
+    <li>Distancia recorrida: {{ viaje.pedido.distancia }} km</li>
+    <li>Precio cobrado: {{ viaje.precio }} €</li>
   </ul>
 </div>
