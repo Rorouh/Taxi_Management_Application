@@ -9,6 +9,7 @@ h1 {
 nav {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 2rem;
 }
@@ -30,3 +31,4 @@ router-outlet {
   max-width: 800px;
   padding: 1rem;
 }
+

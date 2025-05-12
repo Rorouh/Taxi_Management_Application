@@ -98,7 +98,7 @@ exports.getViajesConductor = async (req, res) => {
         const turnoIds = turnos.map(t => t._id);
 
         const viajes = await Viaje.find({ turno: { $in: turnoIds } })
-        .sort({ inicio: 1 }) 
+        .sort({ inicio: -1 }) 
         .populate({
             path: 'pedido',
             match: { estado: 'completado' },
