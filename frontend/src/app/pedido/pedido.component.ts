@@ -7,7 +7,8 @@ import { ActivatedRoute } from '@angular/router';
 import  cp  from '../data/codigos_postais.json';
 import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
-import { After } from 'v8';
+import { debounceTime } from 'rxjs';
+import { Subject } from 'rxjs';
 
 export interface PedidoFront {
   id?: string;
@@ -69,13 +70,19 @@ export class PedidoComponent implements OnInit, AfterViewInit {
     distancia: 0,
     tiempo: 0
   }
-
+  private origenChanges = new Subject<void>();
+  private destinoChanges = new Subject<void>();
   cliente!: Cliente;
   map!: any;
   mapOrigen!: any;
   idPedido: string = '';
   formEnviado: boolean = false;
-  constructor(private clienteService: ClienteService, private pedidoService: PedidoService, private route: ActivatedRoute, private router: Router) { }
+  origenNoValido: boolean = false;
+  destinoNoValido: boolean = false;
+  constructor(private clienteService: ClienteService, private pedidoService: PedidoService, private route: ActivatedRoute, private router: Router) {
+    this.origenChanges.pipe(debounceTime(500)).subscribe(() => this.geocodeOrigen());
+    this.destinoChanges.pipe(debounceTime(500)).subscribe(() => this.geocodeDestino());
+  }
   
   ngOnInit() {
     this.pedido.cliente = this.route.snapshot.paramMap.get('nif') || '';
@@ -104,6 +111,13 @@ export class PedidoComponent implements OnInit, AfterViewInit {
         });
     }
 
+  }
+  onOrigenChange() {
+    this.origenChanges.next();
+  }
+
+  onDestinoChange() {
+    this.destinoChanges.next();
   }
   private geolocalizar() {
     if(!navigator.geolocation) {
@@ -147,8 +161,6 @@ export class PedidoComponent implements OnInit, AfterViewInit {
 
 
   }
-
-
 
   setDestino(e : any){
     const {lat , lng} = e.latlng;
@@ -212,5 +224,56 @@ export class PedidoComponent implements OnInit, AfterViewInit {
     this.pedido.tiempo = Math.round(this.pedido.distancia*4);
   }
   
+  geocodeOrigen(): void {
+    const {calle, numero, codigoPostal, localidad} = this.pedido.origen;
+    if(!calle || !numero || !codigoPostal || !localidad){
+      this.origenNoValido = true;
+      return;
+    }
+    const query = `${calle} ${numero}, ${localidad}, ${codigoPostal}`;
+    const url   = `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(query)}`;
+    fetch(url).then(response => response.json()).then(data => {
+      if(data.length > 0){
+        this.pedido.origen.latitud = data[0].lat;
+        this.pedido.origen.longitud = data[0].lon;
+        this.origenNoValido = false;
+        if(this.mapOrigen){
+          this.mapOrigen.setView([this.pedido.origen.latitud, this.pedido.origen.longitud], 18);
+        }
+      }else{
+        this.origenNoValido = true;
+      }
+    })
+    .catch(error => {
+      this.origenNoValido = true;
+      console.error(error);
+    })
+  }
+
+  geocodeDestino(){
+    const {calle, numero, codigoPostal, localidad} = this.pedido.destino;
+    if(!calle || !numero || !codigoPostal || !localidad){
+      this.destinoNoValido = true;
+      return;
+    }
+    const query = `${calle} ${numero}, ${localidad}, ${codigoPostal}`;
+    const url   = `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(query)}`;
+    fetch(url).then(response => response.json()).then(data => {
+      if(data.length > 0){
+        this.pedido.destino.latitud = data[0].lat;
+        this.pedido.destino.longitud = data[0].lon;
+        this.destinoNoValido = false;
+        if(this.map){
+          this.map.setView([this.pedido.destino.latitud, this.pedido.destino.longitud], 18);
+        }
+      }else{
+        this.destinoNoValido = true;
+      }
+    })
+    .catch(error => {
+      this.destinoNoValido = true;
+      console.error(error);
+    })
+  }
 
 }

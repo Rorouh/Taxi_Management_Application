@@ -1,12 +1,15 @@
 <h2> Bienvenido, {{cliente.nombre}}</h2>
 <form  #fp="ngForm" (ngSubmit)="onSubmit(fp)">
 <legend>Origen</legend>
-    <div id="mapOrigen" style="height: 300px; margin-bottom:1rem;"></div>
+    <div id="mapOrigen" style="height: 300px; margin-bottom:1rem;">
+      <label class="error" *ngIf="origenNoValido && formEnviado">Calle no encontrada</label>
+    </div>
     <div>
       <label>Calle</label>
       <input
         name="calle"
         [(ngModel)]="pedido.origen.calle"
+        (ngModelChange)="onOrigenChange()"
         required
         #calle="ngModel"
       />
@@ -17,6 +20,7 @@
       <input
         name="numero"
         [(ngModel)]="pedido.origen.numero"
+        (ngModelChange)="onOrigenChange()"
         required
         #numero="ngModel"
       />
@@ -27,7 +31,7 @@
       <input
         name="codigoPostal"
         [(ngModel)]="pedido.origen.codigoPostal"
-        (ngModelChange)="cambiarLocalidadOrigen($event)"
+        (ngModelChange)="cambiarLocalidadOrigen($event); onOrigenChange()"
         required
         pattern="\d{4}-\d{3}"
         #codigoPostal="ngModel"
@@ -40,6 +44,7 @@
       <input
         name="localidad"
         [(ngModel)]="pedido.origen.localidad"
+        (ngModelChange)="onOrigenChange()"
         required
         #localidad="ngModel"
       />
@@ -55,6 +60,7 @@
       <input
         name="calleDestino"
         [(ngModel)]="pedido.destino.calle"
+        (ngModelChange)="onDestinoChange()"
         required
         #calledestino="ngModel"
       />
@@ -65,6 +71,7 @@
       <input
         name="numeroDestino"
         [(ngModel)]="pedido.destino.numero"
+        (ngModelChange)="onDestinoChange()"
         required
         #numerodestino="ngModel"
       />
@@ -75,7 +82,7 @@
       <input
         name="codigoPostalDestino"
         [(ngModel)]="pedido.destino.codigoPostal"
-        (ngModelChange)="cambiarLocalidadDestino($event)"
+        (ngModelChange)="cambiarLocalidadDestino($event); onDestinoChange()"
         required
         pattern="\d{4}-\d{3}"
         #codigoPostalDestino="ngModel"
@@ -88,6 +95,7 @@
       <input
         name="localidadDestino"
         [(ngModel)]="pedido.destino.localidad"
+        (ngModelChange)="onDestinoChange()"
         required
         #localidadDestino="ngModel"
       />
