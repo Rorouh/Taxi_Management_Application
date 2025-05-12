@@ -34,11 +34,11 @@ export class ViajeComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id')!;
-    this.viajeSrv.getViajeID(id).subscribe(raw => {
+    this.viajeSrv.getViajeID(id).subscribe(data => {
       // Convertimos strings a Date
-      raw.inicio = new Date(raw.inicio as any);
-      raw.fin    = new Date(raw.fin as any);
-      this.viaje = raw;
+      data.inicio = new Date(data.inicio as any);
+      data.fin    = new Date(data.fin as any);
+      this.viaje = data;
       this.startPollingPedido();
     });
   }
@@ -80,21 +80,23 @@ export class ViajeComponent implements OnInit, OnDestroy {
     this.titulo = `Adelanto aplicado: –${this.advanceMinutes} min (total ${this.viaje.tiempoTotal} min)`;
   }
 
-  finalizarViaje(): void {
-    const km = this.viaje.pedido.distancia;
-    this.viajeSrv.finalizarViaje(this.viaje._id || '', {
-      kilometros: km,
-      fin: this.viaje.fin.toISOString()
-    }).subscribe(raw => {
-      // de nuevo, parseamos las fechas
-      raw.inicio = new Date(raw.inicio as any);
-      raw.fin    = new Date(raw.fin as any);
-      this.viaje = raw;
-      this.finalizado    = true;
+finalizarViaje(): void {
+  const km = this.viaje.pedido.distancia;
+  this.viajeSrv.finalizarViaje(this.viaje._id || '', {
+    kilometros: km,
+    fin: this.viaje.fin.toISOString()
+  }).subscribe({
+    next: data => {
+      data.inicio = new Date(data.inicio as any);
+      data.fin    = new Date(data.fin   as any);
+      this.viaje = data;
+      this.finalizado = true;
       this.viajeTerminado = true;
-      this.titulo        = 'Viaje finalizado — gracias';
-    }, err => console.error(err));
-  }
+      this.titulo = 'Viaje finalizado — gracias';
+    },
+    error: err => console.error('Error al finalizar viaje:', err)
+  });
+}
 
   ngOnDestroy(): void {
     clearInterval(this.poller);

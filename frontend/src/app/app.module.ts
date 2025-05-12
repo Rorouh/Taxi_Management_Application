@@ -17,6 +17,7 @@ import { PedidoComponent } from './pedido/pedido.component';
 import { EsperarPedidoComponent } from './esperar-pedido/esperar-pedido.component';
 import { AceptarPedidosComponent } from './aceptar-pedidos/aceptar-pedidos.component';
 import { ViajeComponent } from './viaje/viaje.component';
+import { VerViajesComponent } from './ver-viajes/ver-viajes.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +34,7 @@ import { ViajeComponent } from './viaje/viaje.component';
     EsperarPedidoComponent,
     AceptarPedidosComponent,
     ViajeComponent,
+    VerViajesComponent,
   ],
   imports: [
     BrowserModule,

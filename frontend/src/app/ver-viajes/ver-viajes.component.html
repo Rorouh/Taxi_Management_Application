@@ -1,0 +1,8 @@
+<h2>Viajes Registrados</h2>
+
+<div>
+    <ul *ngFor="let viaje of viajes">
+        <li>{{viaje.pedido.origen.calle}} {{viaje.pedido.origen.localidad}} - {{viaje.pedido.destino.calle}} {{viaje.pedido.destino.localidad}}
+        {{viaje.inicio | date:'dd/MM/yyyy HH:mm'}} - {{viaje.fin | date:'dd/MM/yyyy HH:mm'}} - {{viaje.tiempoTotal}} min - {{viaje.precio}} €</li>
+    </ul>
+</div>

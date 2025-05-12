@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Conductor = require('./Conductor');
-const Taxi = require('./Taxi');
+const Taxi = require('./taxi');
 
 const Schema = mongoose.Schema;
 

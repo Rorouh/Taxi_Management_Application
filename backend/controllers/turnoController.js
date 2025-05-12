@@ -1,6 +1,6 @@
 const Turno = require('../models/turno');
 const Conductor = require('../models/Conductor');
-const Taxi = require('../models/Taxi');
+const Taxi = require('../models/taxi');
 
 
 exports.getTurnos = async (req, res) => {

@@ -1,4 +1,7 @@
 const Viaje = require('../models/Viaje');
+const Pedido = require('../models/Pedido');
+const Turno = require('../models/turno');
+const Conductor = require('../models/Conductor');
 
 exports.getViajes = async (req, res) => {
     try{
@@ -61,8 +64,6 @@ exports.getViajeID = async (req, res) => {
     }
 };
 
-//Storry 8
-// controllers/viajeController.js
 
 exports.finalizarViaje = async (req, res) => {
     try {
@@ -70,15 +71,11 @@ exports.finalizarViaje = async (req, res) => {
       const viaje = await Viaje.findById(req.params.id).populate('pedido');
       if (!viaje) return res.status(404).json({ error: 'Viaje no encontrado' });
   
-      // Eliminamos la validación de "si viaje.fin ya existe"
-      // viaje.fin siempre existe para la fecha prevista,
-      // así que simplemente actualizamos con la hora real y km.
       viaje.fin        = fin ? new Date(fin) : new Date();
       viaje.kilometros = kilometros ?? viaje.kilometros;
       viaje.precio     = precio     ?? viaje.precio;
       await viaje.save();
   
-      // Cambiamos el estado del pedido a 'completado'
       viaje.pedido.estado = 'completado';
       await viaje.pedido.save();
   
@@ -86,5 +83,40 @@ exports.finalizarViaje = async (req, res) => {
     } catch (e) {
       res.status(400).json({ error: e.message });
     }
-  };
-  
+};
+
+exports.getViajesConductor = async (req, res) => {
+  try {
+    const { nif } = req.params;
+
+    const conductor = await Conductor.findOne({ nif });
+    if (!conductor) {
+      return res.status(404).json({ error: 'Conductor no encontrado' });
+    }
+
+    const turnos = await Turno.find({ conductor: conductor._id });
+    const turnoIds = turnos.map(t => t._id);
+
+    const viajes = await Viaje.find({ turno: { $in: turnoIds } })
+      .sort({ inicio: 1 }) 
+      .populate({
+        path: 'pedido',
+        match: { estado: 'completado' },
+        populate: { path: 'cliente' }
+      })
+      .populate({
+        path: 'turno',
+        populate: [
+          { path: 'conductor' },
+          { path: 'taxi' }
+        ]
+      });
+
+    const resultado = viajes.filter(v => v.pedido && v.turno && v.turno.conductor);
+
+    res.json(resultado);
+  } catch (e) {
+    console.error(e);
+    res.status(400).json({ error: 'Error interno del servidor' });
+  }
+};

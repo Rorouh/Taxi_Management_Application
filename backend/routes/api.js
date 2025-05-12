@@ -38,5 +38,6 @@ router.post('/viaje', viajeController.createViaje);
 router.get('/viaje/pedido/:id', viajeController.getViajeIdPedido);
 router.get('/viaje/:id', viajeController.getViajeID);
 router.put('/viaje/finalizar/:id', viajeController.finalizarViaje);
+router.get('/viaje/conductor/:nif', viajeController.getViajesConductor);
 
 module.exports = router;
