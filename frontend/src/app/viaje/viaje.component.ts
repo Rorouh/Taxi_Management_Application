@@ -13,12 +13,12 @@ import { PedidoService } from '../services/pedido.service';
 export class ViajeComponent implements OnInit, OnDestroy {
   viaje: Viaje = {} as Viaje;
 
-  // estado UI
+
   esperandoCliente = true;
-  viajeEnCurso     = false;
-  viajeTerminado   = false;
-  titulo           = 'Esperando a que el cliente acepte…';
-  finalizado       = false;
+  viajeEnCurso = false;
+  viajeTerminado = false;
+  titulo = 'Esperando a que el cliente acepte…';
+  finalizado = false;
 
   delayMinutes = 0;
   advanceMinutes = 0;
@@ -35,7 +35,6 @@ export class ViajeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id')!;
     this.viajeSrv.getViajeID(id).subscribe(data => {
-      // Convertimos strings a Date
       data.inicio = new Date(data.inicio as any);
       data.fin    = new Date(data.fin as any);
       this.viaje = data;

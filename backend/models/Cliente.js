@@ -7,8 +7,8 @@ const clienteSchema = new mongoose.Schema({
     match: [/^\d{9}$/, 'El NIF debe tener 9 dígitos'],
     unique: true
   },
-  nombre:        { type: String, required: true },
-  genero:        { type: String, enum: ['femenino','masculino'], required: true },
+  nombre: { type: String, required: true },
+  genero: { type: String, enum: ['femenino','masculino'], required: true },
   direccion: {
     calle: { type: String, required: true },
     numero: { type: String, required: true },

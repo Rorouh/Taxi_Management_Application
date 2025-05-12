@@ -56,77 +56,77 @@ export class AceptarPedidosComponent implements OnInit {
 
   ngOnInit(): void {
     const nif = this.route.snapshot.paramMap.get('nif') || '';
-    this.turnoService.getTurnosConductor(nif).subscribe(turnos => {
-      // Buscamos el turno en curso
-      this.turnoActual = turnos.find(turno => {
-        const inicio = new Date(turno.inicio).getTime();
-        const fin    = new Date(turno.fin).getTime();
-        return inicio < Date.now() && Date.now() < fin;
-      }) || null;
+    this.turnoService.getTurnosConductor(nif).subscribe({
+      next: turnos => {
+        this.turnoActual = turnos.find(turno => {
+          const inicio = new Date(turno.inicio).getTime();
+          const fin    = new Date(turno.fin).getTime();
+          return inicio < Date.now() && Date.now() < fin;
+        }) || null;
 
-      if (!this.turnoActual) {
-        // No hay turno activo
+        if (!this.turnoActual) {
+          this.noDisponible = true;
+          return;
+        }
+
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            pos => {
+              this.lat = pos.coords.latitude;
+              this.lng = pos.coords.longitude;
+              this.obtenerListaViajes();
+            },
+            err => {
+              console.warn('Geoloc denegada o fallida:', err);
+              this.obtenerListaViajes();
+            }
+          );
+        } else {
+          this.obtenerListaViajes();
+        }
+      },
+      error: err => {
+        console.error('Error al cargar turnos:', err);
         this.noDisponible = true;
-        return;
       }
-
-      // Intentamos obtener geolocalización
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          pos => {
-            this.lat = pos.coords.latitude;
-            this.lng = pos.coords.longitude;
-            this.obtenerListaViajes();
-          },
-          err => {
-            console.warn('Geoloc denegada o fallida:', err);
-            // Aunque falle, cargamos igualmente la lista
-            this.obtenerListaViajes();
-          }
-        );
-      } else {
-        // Si el navegador no soporta geoloc
-        this.obtenerListaViajes();
-      }
-    }, err => {
-      console.error('Error al cargar turnos:', err);
-      this.noDisponible = true;
     });
   }
 
+
   aceptarPedido(v: Viaje): void {
-    // Cambiamos estado del pedido
     this.pedidoService.cambiarEstadoPedido(v.pedido._id || '', 'aceptado')
-      .subscribe(() => {
-        // Preparamos simulación y viaje
-        this.viajeFront = {
-          pedido: v.pedido._id || '',
-          turno:  v.turno._id || '',
-          distanciaCliente: v.distanciaCliente,
-          tiempoTotal:      v.tiempoTotal,
-          inicio:           new Date(),
-          fin:              v.fin,
-          precio:           0
-        };
+      .subscribe({
+        next: () => {
+          // Preparamos simulación y viaje
+          this.viajeFront = {
+            pedido: v.pedido._id || '',
+            turno:  v.turno._id || '',
+            distanciaCliente: v.distanciaCliente,
+            tiempoTotal:      v.tiempoTotal,
+            inicio:           new Date(),
+            fin:              v.fin,
+            precio:           0
+          };
 
-        // Nivel confort desde turnoActual (ya garantizado no-null)
-        this.simulacion.nivelConfort = this.turnoActual!.taxi.nivelConfort;
-        this.simulacion.inicio = this.viajeFront.inicio.toISOString();
-        this.simulacion.fin    = this.viajeFront.fin.toISOString();
+          this.simulacion.nivelConfort = this.turnoActual!.taxi.nivelConfort;
+          this.simulacion.inicio       = this.viajeFront.inicio.toISOString();
+          this.simulacion.fin          = this.viajeFront.fin.toISOString();
 
-        // Simular coste
-        this.precioService.simularCoste(this.simulacion).subscribe({
-          next: res => {
-            this.viajeFront.precio = res.coste;
-            // Registrar viaje real
-            this.viajeService.registrarViaje(this.viajeFront).subscribe({
-              next: real => this.router.navigate(['/viaje', real._id]),
-              error: err => console.error('Error al registrar viaje:', err)
-            });
-          },
-          error: err => console.error('Error al simular coste:', err)
-        });
-      }, err => console.error('Error cambiar estado pedido:', err));
+          // Simular coste
+          this.precioService.simularCoste(this.simulacion).subscribe({
+            next: res => {
+              this.viajeFront.precio = res.coste;
+              // Registrar viaje real
+              this.viajeService.registrarViaje(this.viajeFront).subscribe({
+                next: real => this.router.navigate(['/viaje', real._id]),
+                error: err => console.error('Error al registrar viaje:', err)
+              });
+            },
+            error: err => console.error('Error al simular coste:', err)
+          });
+        },
+        error: err => console.error('Error cambiar estado pedido:', err)
+      });
   }
 
   private obtenerListaViajes(): void {
@@ -137,36 +137,40 @@ export class AceptarPedidosComponent implements OnInit {
     }
 
     const nivel = this.turnoActual.taxi.nivelConfort;
-    this.pedidoService.getPedidosDisponibles(nivel).subscribe(pedidos => {
-      const ahora = Date.now();
-      const finTurno = new Date(this.turnoActual!.fin).getTime();
-      this.viajes = [];
+    this.pedidoService.getPedidosDisponibles(nivel).subscribe({
+      next: pedidos => {
+        const ahora = Date.now();
+        const finTurno = new Date(this.turnoActual!.fin).getTime();
+        this.viajes = [];
 
-      for (const pedido of pedidos) {
-        // Calculamos distancia y tiempo hasta cliente
-        const { distancia, tiempo } = this.calcularTiempoCliente(pedido);
-        const tiempoTotal = tiempo + pedido.tiempo;
-        const finEstimado = ahora + tiempoTotal * 60_000;
-        if (finEstimado > finTurno) continue;
+        for (const pedido of pedidos) {
+          // Calculamos distancia y tiempo hasta cliente
+          const { distancia, tiempo } = this.calcularTiempoCliente(pedido);
+          const tiempoTotal = tiempo + pedido.tiempo;
+          const finEstimado = ahora + tiempoTotal * 60_000;
+          if (finEstimado > finTurno) continue;
 
-        this.viajes.push({
-          pedido,
-          turno: this.turnoActual!,
-          distanciaCliente: distancia,
-          tiempoTotal:      Math.round(tiempoTotal),
-          inicio:           new Date(ahora),
-          fin:              new Date(finEstimado),
-          precio: 0 // se asigna tras aceptarPedido
-        });
+          this.viajes.push({
+            pedido,
+            turno: this.turnoActual!,
+            distanciaCliente: distancia,
+            tiempoTotal: Math.round(tiempoTotal),
+            inicio: new Date(ahora),
+            fin: new Date(finEstimado),
+            precio: 0 // se asigna tras aceptarPedido
+          });
+        }
+
+        // Ordenar de menor a mayor distancia
+        this.viajes.sort((a, b) => a.distanciaCliente - b.distanciaCliente);
+      },
+      error: err => {
+        console.error('Error al obtener pedidos disponibles:', err);
+        this.noDisponible = true;
       }
-
-      // Ordenar de menor a mayor distancia
-      this.viajes.sort((a, b) => a.distanciaCliente - b.distanciaCliente);
-    }, err => {
-      console.error('Error al obtener pedidos disponibles:', err);
-      this.noDisponible = true;
     });
   }
+
 
   /** Haversine */
   private toRad(x: number): number {
