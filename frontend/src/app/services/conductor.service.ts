@@ -35,4 +35,11 @@ export class ConductorService {
     return this.http.get<Conductor>(`${this.url}/${nif}`);
   }
   
+  updateConductor(nif: string, data: Partial<Conductor>): Observable<Conductor> {
+    return this.http.put<Conductor>(`${this.url}/${nif}`, data);
+  }
+
+  deleteConductor(nif: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.url}/${nif}`);
+  }
 }
