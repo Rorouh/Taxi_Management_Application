@@ -8,6 +8,7 @@ const turnoController = require('../controllers/turnoController');
 const clienteController = require('../controllers/clienteController');
 const pedidoController = require('../controllers/pedidoController');
 const viajeController = require('../controllers/viajeController');
+const reportController = require('../controllers/reportController');
 
 router.post('/taxi', taxiController.createTaxi);
 router.get('/taxi', taxiController.getTaxis);
@@ -49,5 +50,10 @@ router.get('/viaje/pedido/:id', viajeController.getViajeIdPedido);
 router.get('/viaje/:id', viajeController.getViajeID);
 router.put('/viaje/finalizar/:id', viajeController.finalizarViaje);
 router.get('/viaje/conductor/:nif', viajeController.getViajesConductor);
+
+// Story12
+router.get   ('/reportes/totales', reportController.getTotales);
+router.get   ('/reportes/subtotales/:tipo',reportController.getSubtotales);
+router.get   ('/reportes/detalles/:tipo/:entidad/:id',reportController.getDetalles);
 
 module.exports = router;

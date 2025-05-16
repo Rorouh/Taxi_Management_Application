@@ -14,6 +14,7 @@ import { EsperarPedidoComponent } from './esperar-pedido/esperar-pedido.componen
 import { AceptarPedidosComponent } from './aceptar-pedidos/aceptar-pedidos.component';
 import { ViajeComponent } from './viaje/viaje.component';
 import { VerViajesComponent } from './ver-viajes/ver-viajes.component';
+
 const routes: Routes = [
   { path: '',           redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'dashboard',  component: DashboardComponent },

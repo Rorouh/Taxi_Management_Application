@@ -34,7 +34,7 @@ import { VerViajesComponent } from './ver-viajes/ver-viajes.component';
     EsperarPedidoComponent,
     AceptarPedidosComponent,
     ViajeComponent,
-    VerViajesComponent,
+    VerViajesComponent
   ],
   imports: [
     BrowserModule,
