@@ -71,13 +71,32 @@
         </select>
         <label class="error" *ngIf="nivelConfort.hasError('required') && formEnviado">Introduzca un nivel de confort</label>
     </div>
-    <button type="submit">Registrar</button>
-    <label class="success" *ngIf="taxicreado">Taxi creado con exito!</label>
+    <button type="submit">{{ editMode ? 'Guardar' : 'Registrar' }}</button>
+    <button type="button" *ngIf="editMode" (click)="reset()">Cancelar</button>
+    <label class="error" *ngIf="mensaje">{{ mensaje }}</label>
+    <label class="success" *ngIf="taxicreado">{{ editMode ? 'Taxi actualizado con éxito!' : 'Taxi creado con éxito!' }}</label>
+  
 </form>
 
 <h2>Taxis Registrados</h2>
 <ul>
     <li *ngFor="let taxi of taxis">
         {{taxi.matricula}}  {{taxi.marca}}  {{taxi.modelo}}  {{taxi.anoCompra}}  {{taxi.nivelConfort}}
+    <button (click)="editar(taxi)">✎</button>
+    <button (click)="borrar(taxi)">🗑️</button>
     </li>
 </ul>
+
+<button class="toggle-button" (click)="toggleActive()">
+       {{ showActive ? 'Ocultar turnos activos' : 'Mostrar turnos activos' }}
+</button>
+    
+<div *ngIf="showActive" class="active-turnos">
+    <h2>Taxis en turno (hoy)</h2>
+    <ul class="taxis-list">
+        <li class="taxis-item" *ngFor="let t of activeTurnos">
+        🚕 {{ t.taxi.matricula }} — 🧑 {{ t.conductor.nombre }}
+        ({{ t.inicio | date:'short' }} → {{ t.fin | date:'short' }})
+        </li>
+    </ul>
+</div>

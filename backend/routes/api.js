@@ -11,6 +11,9 @@ const viajeController = require('../controllers/viajeController');
 
 router.post('/taxi', taxiController.createTaxi);
 router.get('/taxi', taxiController.getTaxis);
+//story 10
+router.put('/taxi/:id', taxiController.updateTaxi);
+router.delete('/taxi/:id', taxiController.deleteTaxi);
 
 router.post('/conductor', conductorController.createConductor);
 router.get('/conductor', conductorController.getConductores);
@@ -21,9 +24,13 @@ router.get('/precios', precioController.getPrecios);
 router.post('/precios/simular', precioController.simularPrecio);
 
 router.get('/turno', turnoController.getTurnos);
+
+//extra para el sroty10
+router.get('/turno/activos',turnoController.getActiveTurnos); 
 router.get('/turno/:nif', turnoController.getTurnosConductor);
 router.post('/turno', turnoController.createTurno);
 router.post('/turno/taxis-disponibles', turnoController.getTaxisDisponibles);
+
 
 router.post('/cliente', clienteController.createCliente);
 router.get('/cliente/:nif', clienteController.getClienteNIF);

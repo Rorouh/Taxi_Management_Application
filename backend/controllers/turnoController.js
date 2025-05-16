@@ -96,6 +96,21 @@ exports.getTaxisDisponibles = async (req, res) => {
 };
 
 
-
+//Extra para el story 10
+exports.getActiveTurnos = async (req, res) => {
+    try {
+      const now = new Date();
+      const activos = await Turno.find({
+        inicio: { $lte: now },
+        fin:    { $gte: now }
+      })
+      .populate('taxi')
+      .populate('conductor');
+      res.status(200).json(activos);
+    } catch (err) {
+      res.status(400).json({ error: err.message });
+    }
+  };
+  
 
 

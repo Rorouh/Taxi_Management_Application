@@ -12,19 +12,28 @@ export interface Taxi {
   nivelConfort: 'basico' | 'lujoso';
 }
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 
 export class TaxiService {
   private url = 'http://localhost:3000/taxi';
+
   constructor(private http: HttpClient) { }
 
-  getTaxis(): Observable<any[]> {
-    return this.http.get<any[]>(this.url);
+  getTaxis(): Observable<Taxi[]> {
+    return this.http.get<Taxi[]>(this.url);
   }
 
-  registrarTaxi(taxi: any): Observable<any> {
-    return this.http.post<any>(this.url, taxi);
+  registrarTaxi(taxi: Taxi): Observable<Taxi> {
+    return this.http.post<Taxi>(this.url, taxi);
+  }
+
+  //Story 10
+  updateTaxi(id: string, taxi: Partial<Taxi>): Observable<Taxi> {
+    return this.http.put<Taxi>(`${this.url}/${id}`, taxi);
+  }
+
+  deleteTaxi(id: string): Observable<{ message: string }> {
+    return this.http.delete<{ message: string }>(`${this.url}/${id}`);
   }
 }
+
