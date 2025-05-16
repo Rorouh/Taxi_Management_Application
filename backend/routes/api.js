@@ -18,6 +18,9 @@ router.delete('/taxi/:id', taxiController.deleteTaxi);
 router.post('/conductor', conductorController.createConductor);
 router.get('/conductor', conductorController.getConductores);
 router.get('/conductor/:nif', conductorController.getConductorNIF);
+//Story 11 
+router.put    ('/conductor/:nif', conductorController.updateConductor);
+router.delete ('/conductor/:nif', conductorController.deleteConductor);
 
 router.post('/precios', precioController.crearOActualizarPrecio);
 router.get('/precios', precioController.getPrecios);
