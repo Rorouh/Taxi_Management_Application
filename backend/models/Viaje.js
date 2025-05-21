@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Pedido = require('./Pedido');
-const Turno = require('./turno');
+const Turno = require('./Turno');
 
 
 const viajeSchema = new mongoose.Schema({

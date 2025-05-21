@@ -1,6 +1,6 @@
 <h2>Registrar Taxi</h2>
 
-<form #f="ngForm" (ngSubmit)="onSubmit()" >
+<form #f="ngForm" (ngSubmit)="onSubmit(f)" >
     <div>
         <label>Matricula:</label>
         <input 
@@ -65,6 +65,7 @@
             [(ngModel)]="taxi.nivelConfort" 
             required 
             #nivelConfort="ngModel"
+            [disabled] ="desactivarConfort"
         >
             <option value="basico">Basico</option>
             <option value="lujoso">Lujoso</option>
@@ -73,17 +74,22 @@
     </div>
     <button type="submit">{{ editMode ? 'Guardar' : 'Registrar' }}</button>
     <button type="button" *ngIf="editMode" (click)="reset()">Cancelar</button>
-    <label class="error" *ngIf="mensaje">{{ mensaje }}</label>
-    <label class="success" *ngIf="taxicreado">{{ editMode ? 'Taxi actualizado con éxito!' : 'Taxi creado con éxito!' }}</label>
+    <label class="success" *ngIf="taxicreado">{{ 'Taxi registrado con exito!' }}</label>
   
 </form>
 
 <h2>Taxis Registrados</h2>
+
 <ul>
+    <label class="error" *ngIf="deleteMensaje != ''">
+        {{ deleteMensaje }}
+    </label>
     <li *ngFor="let taxi of taxis">
         {{taxi.matricula}}  {{taxi.marca}}  {{taxi.modelo}}  {{taxi.anoCompra}}  {{taxi.nivelConfort}}
-    <button (click)="editar(taxi)">✎</button>
-    <button (click)="borrar(taxi)">🗑️</button>
+        <div class="botones">
+            <button class="editar" (click)="editar(taxi)">✎</button>
+            <button class="editar"(click)="borrar(taxi)">🗑️</button>
+        </div> 
     </li>
 </ul>
 

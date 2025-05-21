@@ -1,6 +1,6 @@
 const Viaje = require('../models/Viaje');
 const Pedido = require('../models/Pedido');
-const Turno = require('../models/turno');
+const Turno = require('../models/Turno');
 const Conductor = require('../models/Conductor');
 
 exports.getViajes = async (req, res) => {
@@ -118,5 +118,27 @@ exports.getViajesConductor = async (req, res) => {
     } catch (e) {
         console.error(e);
         res.status(400).json({ error: 'Error interno del servidor' });
+    }
+};
+
+exports.TaxiEnViajes = async (req, res) => {
+    try {
+        const { id }  = req.params;
+            const turnos = await Turno.find(
+            { taxi: id },
+            { _id: 1 }
+        );
+        const turnoIds = turnos.map(t => t._id);
+
+        if (turnoIds.length === 0) {
+        return res.status(200).json({ enViaje: false });
+        }
+
+        const existe = await Viaje.exists({
+            turno: { $in: turnoIds }
+        });
+        res.status(200).json({enViaje: existe ? true : false});
+    } catch (e) {
+        res.status(400).json({ error: e.message });
     }
 };

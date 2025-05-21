@@ -14,7 +14,7 @@ import { EsperarPedidoComponent } from './esperar-pedido/esperar-pedido.componen
 import { AceptarPedidosComponent } from './aceptar-pedidos/aceptar-pedidos.component';
 import { ViajeComponent } from './viaje/viaje.component';
 import { VerViajesComponent } from './ver-viajes/ver-viajes.component';
-
+import { ReportesComponent } from './reportes/reportes.component';
 const routes: Routes = [
   { path: '',           redirectTo: 'dashboard', pathMatch: 'full' },
   { path: 'dashboard',  component: DashboardComponent },
@@ -30,6 +30,7 @@ const routes: Routes = [
   {path: 'aceptar-pedidos/:nif', component: AceptarPedidosComponent},
   {path: 'viaje/:id', component: ViajeComponent},
   {path: 'ver-viajes/:nif', component: VerViajesComponent},
+  {path: 'reportes', component: ReportesComponent},
   { path: '**',         redirectTo: 'dashboard' }
 ];
 

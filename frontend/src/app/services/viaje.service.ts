@@ -39,4 +39,7 @@ export class ViajeService {
     return this.http.get(`${this.url}/conductor/${nif}`);
   }
   
+  taxiEnViajes(id: string): Observable<any> {
+    return this.http.get(`${this.url}/taxi/${id}/existe`);
+  }
 }

@@ -1,15 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { TaxiService, Taxi } from '../services/taxi.service';
 import { TurnoService, Turno }  from '../services/turno.service';
-
+import { ViajeService, Viaje } from '../services/viaje.service';
+import { NgForm } from '@angular/forms';
 @Component({
   selector: 'app-taxi',
   standalone: false,
   templateUrl: './taxi.component.html',
-  styleUrls: ['./taxi.component.css']
+  styleUrl: './taxi.component.css'
 })
-export class TaxiComponent implements OnInit {
-  // Ahora taxi es Partial<Taxi>, todas las props opcionales
+export class TaxiComponent{
   taxi: Partial<Taxi> = {
     matricula:    '',
     anoCompra:    undefined,
@@ -20,109 +20,134 @@ export class TaxiComponent implements OnInit {
 
   taxis: Taxi[] = [];
 
-  lista_marcas = [
-    'Renault','Mercedes','Toyota','Fiat','Peugeot',
-    'Nissan','Chevrolet','Honda','Mazda','Suzuki','Kia'
-  ];
+  lista_marcas: string[] = ['Renault', 'Mercedes', 'Toyota', 'Fiat', 'Peugeot', 'Nissan', 'Chevrolet', 'Honda', 'Mazda', 'Suzuki', 'Kia'];
 
-  modelosPorMarca: { [k: string]: string[] } = {
-    Renault: ['Clio','Twingo','Megane'],
-    Mercedes: ['Clase A','Clase B','Clase C'],
-    Toyota: ['Corolla','Yaris','Camry'],
-    Fiat: ['500','Punto','Doblo'],
-    Peugeot: ['208','2008','3008'],
-    Nissan: ['Qashqai','Leaf','Micra'],
-    Chevrolet: ['Beat','Aveo','Cruze'],
-    Honda: ['Civic','Accord','CR-V'],
-    Mazda: ['3','6','CX-5'],
-    Suzuki: ['Swift','Alto','Jimny'],
-    Kia: ['Picanto','Rio','Sportage']
+  modelosPorMarca: { [key: string]: string[] } = {
+    Renault: ['Clio', 'Twingo', 'Megane'],
+    Mercedes: ['Clase A', 'Clase B', 'Clase C'],
+    Toyota: ['Corolla', 'Yaris', 'Camry'],
+    Fiat: ['500', 'Punto', 'Doblo'],
+    Peugeot: ['208', '2008', '3008'],
+    Nissan: ['Qashqai', 'Leaf', 'Micra'],
+    Chevrolet: ['Beat', 'Aveo', 'Cruze'],
+    Honda: ['Civic', 'Accord', 'CR-V'],
+    Mazda: ['3', '6', 'CX-5'],
+    Suzuki: ['Swift', 'Alto', 'Jimny'],
+    Kia: ['Picanto', 'Rio', 'Sportage']
   };
 
   modelosDisponibles: string[] = [];
-  taxicreado   = false;
-  maxAnoCompra = new Date().getFullYear();
-  formEnviado  = false;
-  mensaje      = '';
-
-  // Story 10
-  editMode   = false;
-  editingId  = '';
-
+  taxicreado: boolean = false;
+  maxAnoCompra: number = new Date().getFullYear();
+  formEnviado: boolean = false;
+  mensaje: string = '';
+  editMode = false;
+  editingId = '';
   showActive = false;
   activeTurnos: Turno[] = [];
+  desactivarConfort = false;
+  deleteMensaje: string = '';
+  constructor(private taxiService: TaxiService, private turnoService: TurnoService, private ViajeService: ViajeService) { }
 
-  constructor(private taxiService: TaxiService, private turnoService: TurnoService) {}
+
 
   ngOnInit() {
     this.cargarTaxis();
   }
 
-  onSubmit() {
-    this.formEnviado = true;
-    this.mensaje     = '';
+  onSubmit(f : NgForm) {
+    if(f.invalid){
+      this.formEnviado = true;
+      return;
+    }
+    this.mensaje = '';
 
-    // Si estamos editando, usamos update; si no, registrar
-    const call$ = this.editMode
-      ? this.taxiService.updateTaxi(this.editingId, this.taxi)
-      : this.taxiService.registrarTaxi(this.taxi as Taxi);
+    if(this.editMode == false){
+        this.taxiService.registrarTaxi(this.taxi).subscribe({
+        next: (response) => {
+          this.taxicreado = true;
+          this.cargarTaxis();
+          this.reset();
+        },
+        error: (error) => {
+          if(error.error.error == 'Matricula ya existente') {
+            this.mensaje = error.error.error;
+          }
+          this.taxicreado = false;
+          this.formEnviado = true;
+        }
+      });
+    }
+    else{
+      this.taxiService.updateTaxi(this.editingId, this.taxi).subscribe({
+        next: () => {
+          this.taxicreado = true;
+          this.cargarTaxis();
+          this.reset();
+        },
+        error: (err) => {
+          this.mensaje = err.error?.error || err.message;
+          this.taxicreado = false;
+          this.formEnviado = true;
+        }
+      });
+    }
 
-    call$.subscribe({
-      next: () => {
-        this.taxicreado = true;
-        this.cargarTaxis();
-        this.reset();
-      },
-      error: err => {
-        this.mensaje     = err.error?.error || err.message;
-        this.taxicreado  = false;
-      }
-    });
   }
 
-  cargarTaxis() {
+  cargarTaxis(): void {
     this.taxiService.getTaxis().subscribe({
-      next: data => this.taxis = data,
-      error: ()   => alert('Error al cargar taxis')
+      next: (data) => this.taxis = data,
+      error: (error) => console.error(error)
     });
   }
 
   editar(t: Taxi) {
-    this.editMode    = true;
-    this.editingId   = t._id || '';
+    this.editMode = true;
+    this.editingId = t._id || '';
     this.taxi = {
-      matricula:    t.matricula,
-      anoCompra:    t.anoCompra,
-      marca:        t.marca,
-      modelo:       t.modelo,
+      matricula: t.matricula,
+      anoCompra: t.anoCompra,
+      marca: t.marca,
+      modelo: t.modelo,
       nivelConfort: t.nivelConfort
     };
     this.cambiarMarca();
+    this.ViajeService.taxiEnViajes(t._id || '').subscribe({
+      next: ({enViaje}) => this.desactivarConfort = enViaje,
+      error: err=> console.error(err)
+    })
     this.formEnviado = this.taxicreado = false;
-    this.mensaje     = '';
+    this.mensaje = '';
+    this.deleteMensaje = '';
   }
+
 
   borrar(t: Taxi) {
     if (!t._id) return;
     this.taxiService.deleteTaxi(t._id).subscribe({
-      next: ()  => this.cargarTaxis(),
-      error: err=> alert(err.error?.error || 'No se pudo eliminar')
+      next: ()  => {
+        this.cargarTaxis();
+        this.deleteMensaje = ''
+      },
+      error: (error)=> {
+        this.deleteMensaje = error.error.error;
+      }
     });
   }
-
+  
   reset() {
-    this.editMode    = false;
-    this.editingId   = '';
+    this.editMode = false;
+    this.editingId = '';
     this.formEnviado = false;
+    this.desactivarConfort = false;
     this.taxi = {
-      matricula:    '',
-      anoCompra:    undefined,
-      marca:        '',
-      modelo:       '',
+      matricula: '',
+      anoCompra: undefined,
+      marca: '',
+      modelo: '',
       nivelConfort: undefined
-    };
-    this.modelosDisponibles = [];
-    this.mensaje           = '';
+    }
   }
 
   cambiarMarca() {
@@ -131,15 +156,14 @@ export class TaxiComponent implements OnInit {
       this.taxi.modelo = '';
     }
   }
-  //Extra stry 10 para ver los taxis activos y sus conductores respectivamente
+
   toggleActive() {
     this.showActive = !this.showActive;
     if (this.showActive) {
       this.turnoService.getActiveTurnos().subscribe({
         next: datos => this.activeTurnos = datos,
-        error: err => alert('Error cargando turnos activos')
+        error: err => console.log('Error cargando turnos activos')
       });
     }
   }
-
 }

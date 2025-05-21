@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { ConductorService } from '../services/conductor.service';
 import cp from '../data/codigos_postais.json';
 import { TurnoService, Turno }  from '../services/turno.service';
-
+import { NgForm } from '@angular/forms';
 interface Conductor {
   nif: string;
   nombre: string;
@@ -51,44 +51,64 @@ export class ConductorComponent {
   nifDuplicado: boolean = false;
   licenciaDuplicada: boolean = false;
   cpNoValido: boolean = false;
-
-  editMode      = false;
-  editingNif    = '';
-
+  editMode = false;
+  editingNif = '';
   showActive = false;
   activeTurnos: Turno[] = [];
+  deleteMensaje: string = '';
 
-  constructor(private conductorService: ConductorService, private turnoService : TurnoService) {}
+  constructor(private turnoService: TurnoService,   private conductorService: ConductorService) {}
 
   ngOnInit() {
     this.cargarConductores();
   }
 
-  onSubmit() {
-    this.formEnviado = true;
-    this.nifDuplicado = this.licenciaDuplicada = false;
-
-    const call$ = this.editMode
-      ? this.conductorService.updateConductor(this.editingNif, this.conductor)
-      : this.conductorService.crearConductor(this.conductor);
-
-    call$.subscribe({
-      next: () => {
-        this.resetForm();
-        this.cargarConductores();
-        this.conductorCreado = true;
-        this.editMode = false;
-      },
-      error: err => {
-        const e = err.error.error;
-        if (e === 'NIF ya existente') this.nifDuplicado = true;
-        if (e === 'Licencia ya existente') this.licenciaDuplicada = true;
-      }
-    });
-  }
   cambiarLocalidad(codP: string) {
     const localidad = (cp as any)[codP] || '';
     this.conductor.direccion.localidad = localidad; 
+  }
+  onSubmit(f : NgForm) {
+    if(f.invalid){
+      this.formEnviado = true;
+      return;
+    }
+    this.nifDuplicado = false;
+    this.licenciaDuplicada = false;
+    if(this.editMode == false){
+      this.conductorService.crearConductor(this.conductor).subscribe({
+      next: () => {
+        this.cargarConductores();
+        this.reset();
+        this.conductorCreado = true;
+      },
+      error: (err) => {
+        if (err.error.error == 'NIF ya existente') {
+          this.nifDuplicado = true;
+        }
+        if (err.error.error == 'Licencia ya existente') {
+          this.licenciaDuplicada = true;
+        }
+      }
+    });
+    }
+    else{
+      this.conductorService.updateConductor(this.editingNif, this.conductor).subscribe({
+        next: () => {
+          this.cargarConductores();
+          this.reset();
+          this.conductorCreado = true;
+        },
+        error: (err) => {
+          if (err.error.error == 'NIF ya existente') {
+            this.nifDuplicado = true;
+          }
+          if (err.error.error == 'Licencia ya existente') {
+            this.licenciaDuplicada = true;
+          }
+        }
+      });
+    }
+
   }
 
   cargarConductores() {
@@ -97,7 +117,48 @@ export class ConductorComponent {
       error: (error) => alert('Error al cargar conductores')
     });
   }
-  resetForm() {
+
+  editar(c: Conductor) {
+    this.editMode = true;
+    this.editingNif = c.nif;
+    this.conductor = {
+      nif: c.nif,
+      nombre: c.nombre,
+      genero: c.genero,
+      anoNacimiento: c.anoNacimiento,
+      direccion: {
+        calle: c.direccion.calle,
+        numero: c.direccion.numero,
+        codigoPostal: c.direccion.codigoPostal,
+        localidad: c.direccion.localidad
+      },
+      licencia: c.licencia
+    };
+    this.formEnviado = false;
+    this.conductorCreado = false;
+    this.nifDuplicado = false;
+    this.licenciaDuplicada = false;
+    this.deleteMensaje = '';
+  }
+
+  borrar(c: Conductor) {
+    if (!c.nif) return;
+    this.conductorService.deleteConductor(c.nif).subscribe({
+      next: ()  => {
+        this.cargarConductores();
+        this.deleteMensaje = '';
+      },
+      error: (error)=> {
+        this.deleteMensaje = error.error.error;
+      }
+    });
+  }
+
+  reset() {
+    this.editMode = false;
+    this.editingNif = '';
+    this.deleteMensaje = '';
+    this.conductorCreado = false;
     this.conductor = {
       nif: '',
       nombre: '',
@@ -116,23 +177,6 @@ export class ConductorComponent {
     this.licenciaDuplicada = false;
   }
 
-  //Story 11
-  editar(c: Conductor) {
-    this.editMode      = true;
-    this.editingNif    = c.nif;
-    this.conductor     = { ...c };
-    this.formEnviado   = this.conductorCreado = false;
-  }
-
-  borrar(c: Conductor) {
-    if (!confirm(`Eliminar conductor ${c.nombre}?`)) return;
-    this.conductorService.deleteConductor(c.nif).subscribe({
-      next: () => this.cargarConductores(),
-      error: err => alert(err.error.error || 'No se pudo eliminar')
-    });
-  }
-
-  //Extra stry 10 para ver los taxis activos y sus conductores respectivamente
   toggleActive() {
     this.showActive = !this.showActive;
     if (this.showActive) {
@@ -142,5 +186,4 @@ export class ConductorComponent {
       });
     }
   }
-
 }

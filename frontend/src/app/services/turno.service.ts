@@ -39,9 +39,10 @@ export class TurnoService {
       fin
     });
   }
-  //Extra story 10 para obtener turnos activos y sus coches respectivos
-  getActiveTurnos(): Observable<Turno[]> {
-    return this.http.get<Turno[]>(`${this.url}/activos`);
+  
+    getActiveTurnos(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.url}/activos`);
   }
+
 
 }

@@ -1,4 +1,4 @@
-<form (ngSubmit)="onSubmit()" #f="ngForm">
+<form (ngSubmit)="onSubmit(f)" #f="ngForm">
   <div>
     <label>NIF</label>
     <input
@@ -116,34 +116,36 @@
   </div>
 
   <button type="submit">
-    Registrar conductor
-    {{ editMode ? 'Guardar cambios' : 'Registrar conductor' }}
-    </button>
-    <button type="button" *ngIf="editMode" (click)="resetForm(); editMode=false;">
-      Cancelar
-    </button>  <label class="success" *ngIf="conductorCreado">Conductor creado con exito!</label>
+    {{ editMode ? 'Guardar cambios' : 'Registrar conductor' }} 
+  </button>
+  <button type="button" *ngIf="editMode" (click)="reset()">Cancelar</button>
+  <label class="success" *ngIf="conductorCreado">Conductor registrado con exito!</label>
 </form>
 
 <h2>Conductores Registrados</h2>
 <ul>
+    <label class="error" *ngIf="deleteMensaje != ''">
+      {{ deleteMensaje }}
+    </label>
     <li *ngFor="let c of conductores">
         {{c.nif}}  {{c.nombre}}  {{c.genero}}  {{c.anoNacimiento}}  {{c.direccion.calle}}  {{c.direccion.numero}}  {{c.direccion.codigoPostal}} {{c.direccion.localidad}} {{c.licencia}}
-        <button (click)="editar(c)">✎</button>
-        <button (click)="borrar(c)">🗑️</button>
-      </li>
+        <div class="botones">
+          <button class ="editar" (click)="editar(c)">✎</button>
+          <button class="editar" (click)="borrar(c)">🗑️</button>
+        </div> 
+    </li>
 </ul>
 
-<!-- botón para alternar -->
 <button class="toggle-button" (click)="toggleActive()">
   {{ showActive ? 'Ocultar turnos activos' : 'Mostrar turnos activos' }}
 </button>
 
-<!-- listado de turnos activos -->
+
 <div *ngIf="showActive" class="active-turnos">
   <h2>Taxis en turno (ahora)</h2>
-  <ul class="taxis-list">
-    <li class="taxis-item" *ngFor="let t of activeTurnos">
-      🚕 {{ t.taxi.matricula }} — 🧑 {{ t.conductor.nombre }}
+  <ul class="c-list">
+    <li class="c-item" *ngFor="let t of activeTurnos">
+      {{ t.taxi.matricula }} — {{ t.conductor.nombre }}
       ({{ t.inicio | date:'short' }} → {{ t.fin | date:'short' }})
     </li>
   </ul>

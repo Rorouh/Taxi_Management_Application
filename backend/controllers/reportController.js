@@ -1,70 +1,80 @@
-// controllers/reportController.js
 const Viaje = require('../models/Viaje');
-const Turno = require('../models/turno');
+const Turno = require('../models/Turno');
 const Conductor = require('../models/Conductor');
 const Taxi = require('../models/taxi');
+const Pedido = require('../models/Pedido');
 
 function parseRange(query) {
-  // rango por defecto: día de hoy
-  const hoy = new Date();
-  const inicio = query.inicio
-    ? new Date(query.inicio)
-    : new Date(hoy.setHours(0, 0, 0, 0));
-  const fin = query.fin
-    ? new Date(query.fin)
-    : new Date(hoy.setHours(23, 59, 59, 999));
-  return { inicio, fin };
+    // rango por defecto: día de hoy
+    const hoy = new Date();
+    const inicio = query.inicio
+        ? new Date(query.inicio)
+        : new Date(hoy.setHours(0, 0, 0, 0));
+    const fin = query.fin
+        ? new Date(query.fin)
+        : new Date(hoy.setHours(23, 59, 59, 999));
+    return { inicio, fin };
 }
 
 // GET /reportes/totales?inicio=&fin=
 exports.getTotales = async (req, res) => {
   try {
-    const { inicio, fin } = parseRange(req.query);
-    const viajes = await Viaje.find({ inicio: { $gte: inicio, $lte: fin } });
-    const totalViajes = viajes.length;
-    let totalHoras = 0, totalKm = 0;
-    viajes.forEach(v => {
-      totalHoras += (v.fin - v.inicio) / 3600000;
-      totalKm    += v.distanciaCliente;
-    });
-    res.json({ totalViajes, totalHoras, totalKm });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
+        const { inicio, fin } = parseRange(req.query);
+        const viajes = await Viaje.find({ inicio: { $gte: inicio, $lte: fin } }).populate('pedido');
+        const totalViajes = viajes.length;
+        let totalHoras = 0, totalKm = 0;
+        viajes.forEach(v => {
+        totalHoras += (v.fin - v.inicio) / 3600000;
+        totalKm    += v.pedido.distancia;
+        });
+        res.json({ totalViajes, totalHoras, totalKm });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
 };
 
 // GET /reportes/subtotales/:tipo?inicio=&fin=
 exports.getSubtotales = async (req, res) => {
   try {
-    const { tipo } = req.params; // 'viajes' | 'horas' | 'km'
-    const { inicio, fin } = parseRange(req.query);
-    const viajes = await Viaje.find({ inicio: { $gte: inicio, $lte: fin } })
-      .populate({ path: 'turno', populate: ['conductor','taxi'] });
+        const { tipo } = req.params; // 'viajes' | 'horas' | 'km'
+        const { inicio, fin } = parseRange(req.query);
+        const viajes = await Viaje.find({ inicio: { $gte: inicio, $lte: fin } })
+            .populate('pedido')
+            .populate({
+                path: 'turno',
+                populate: [
+                    { path: 'conductor' },
+                    { path: 'taxi' }
+                ]
+        });
 
-    const mapC = new Map(), mapT = new Map();
-    viajes.forEach(v => {
-      const keyC = v.turno.conductor._id.toString();
-      const keyT = v.turno.taxi._id.toString();
-      let valor = tipo === 'viajes' ? 1
-                : tipo === 'horas'   ? (v.fin - v.inicio)/3600000
-                :                     v.distanciaCliente;
+        const mapC = new Map();
+        const mapT = new Map();
+        for(const v of viajes) {
+            if (!v.turno || !v.turno.conductor || !v.turno.taxi) continue;
 
-      if (!mapC.has(keyC)) mapC.set(keyC, { conductor: v.turno.conductor, valor: 0 });
-      mapC.get(keyC).valor += valor;
+            const keyC = v.turno.conductor._id.toString();
+            const keyT = v.turno.taxi._id.toString() ;
+            let valor = tipo === 'viajes' ? 1
+                        : tipo === 'horas' ? (v.fin - v.inicio)/3600000
+                        : v.pedido.distancia;
 
-      if (!mapT.has(keyT)) mapT.set(keyT, { taxi: v.turno.taxi, valor: 0 });
-      mapT.get(keyT).valor += valor;
-    });
+            if (!mapC.has(keyC)) mapC.set(keyC, { conductor: v.turno.conductor, valor: 0 });
+            mapC.get(keyC).valor += valor;
 
-    const conductores = Array.from(mapC.values())
-      .sort((a,b) => b.valor - a.valor);
-    const taxis = Array.from(mapT.values())
-      .sort((a,b) => b.valor - a.valor);
+            if (!mapT.has(keyT)) mapT.set(keyT, { taxi: v.turno.taxi, valor: 0 });
+            mapT.get(keyT).valor += valor;
+        };
 
-    res.json({ conductores, taxis });
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
+        const conductores = Array.from(mapC.values())
+            .sort((a,b) => b.valor - a.valor);
+        const taxis = Array.from(mapT.values())
+            .sort((a,b) => b.valor - a.valor);
+
+        res.json({ conductores, taxis });
+    } catch (err) {
+        res.status(400).json({ error: err.message });
+    }
 };
 
 // GET /reportes/detalles/:tipo/:entidad/:id?inicio=&fin=
@@ -74,10 +84,19 @@ exports.getDetalles = async (req, res) => {
     const { tipo, entidad, id } = req.params;
     const { inicio, fin } = parseRange(req.query);
     const viajes = await Viaje.find({ inicio: { $gte: inicio, $lte: fin } })
-      .populate({ path: 'turno', populate: ['conductor','taxi'] });
+            .populate('pedido')
+            .populate({
+                path: 'turno',
+                populate: [
+                    { path: 'conductor' },
+                    { path: 'taxi' }
+                ]
+            });
+        
 
     const detalles = viajes
       .filter(v => {
+        if (!v.turno || !v.turno.conductor || !v.turno.taxi) return false;
         const doc = entidad === 'conductor'
           ? v.turno.conductor._id.toString()
           : v.turno.taxi._id.toString();
@@ -87,7 +106,7 @@ exports.getDetalles = async (req, res) => {
         const base = { viajeId: v._id, inicio: v.inicio, fin: v.fin };
         if (tipo === 'viajes') return base;
         if (tipo === 'horas') return { ...base, horas: (v.fin - v.inicio)/3600000 };
-        if (tipo === 'km')    return { ...base, km: v.distanciaCliente };
+        if (tipo === 'km')    return { ...base, km: v.pedido.distancia };
       })
       .sort((a,b) => {
         if (tipo === 'viajes')   return b.fin - a.fin;
@@ -97,6 +116,7 @@ exports.getDetalles = async (req, res) => {
 
     res.json(detalles);
   } catch (err) {
+    console.error('Error en getSubtotales:', err);
     res.status(400).json({ error: err.message });
   }
 };

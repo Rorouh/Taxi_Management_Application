@@ -49,6 +49,21 @@ button[type="submit"]:hover {
   background-color: #45a049;
 }
 
+button[type="button"] {
+  background-color: #f44336;
+  color: white;
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button[type="button"]:hover {
+  background-color: #d32f2f;
+}
+
 h2 {
   text-align: center;
   margin-top: 2rem;
@@ -65,6 +80,8 @@ ul {
 }
 
 li {
+  display: flex;
+  align-items: center;
   padding: 0.8rem 1rem;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -75,7 +92,26 @@ li {
   transition: box-shadow 0.2s ease;
 }
 
-.success {
+.botones{
+  margin-left: auto; 
+  display: flex;
+  gap: 0.5rem;
+}
+.editar{
+  margin-left: auto;
+  margin-right: 0.5rem;
+  border: none;
+  background-color: transparent;
+  cursor: pointer;
+
+}
+.delete-error {
+  padding: 0 1rem;            
+  font-size: 0.9rem;
+  color: red;
+}
+
+.success{
   color: green;
   font-weight: bold;
   font-size: 1.2rem;
@@ -83,18 +119,14 @@ li {
   text-align: center;
 }
 
-.error {
+.error{
   color: red;
   font-weight: bold;
   margin: 1rem auto;
   text-align: left;
 }
 
-/* —————————— */
-/* Sección “Taxis en turno” con el mismo estilo */
-/* —————————— */
 
-/* Botón consistente con el resto */
 .toggle-button {
   max-width: 600px;
   margin: 1rem auto;
@@ -113,7 +145,6 @@ li {
   background-color: #45a049;
 }
 
-/* Encabezado con el mismo h2 centradito */
 .active-turnos h2 {
   text-align: center;
   margin-top: 2rem;
@@ -122,7 +153,6 @@ li {
   color: #2c3e50;
 }
 
-/* Lista sin viñetas, centrada, mismo max-width */
 .taxis-list {
   list-style: none;
   padding: 0;
@@ -130,7 +160,6 @@ li {
   margin: 1rem auto;
 }
 
-/* Cada ítem igual que los li normales */
 .taxis-item {
   padding: 0.8rem 1rem;
   border: 1px solid #ddd;

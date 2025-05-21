@@ -1,4 +1,4 @@
-const Turno = require('../models/turno');
+const Turno = require('../models/Turno');
 const Conductor = require('../models/Conductor');
 const Taxi = require('../models/taxi');
 
@@ -96,7 +96,6 @@ exports.getTaxisDisponibles = async (req, res) => {
 };
 
 
-//Extra para el story 10
 exports.getActiveTurnos = async (req, res) => {
     try {
       const now = new Date();
@@ -112,5 +111,7 @@ exports.getActiveTurnos = async (req, res) => {
     }
   };
   
+
+
 
 

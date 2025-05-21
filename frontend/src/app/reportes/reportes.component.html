@@ -1,0 +1,84 @@
+<h2>Informes de Viajes</h2>
+
+<form class="report-form" (ngSubmit)="cargarTotales()">
+  <label>
+    Inicio
+    <input type="date" [(ngModel)]="inicio" name="inicio" required />
+  </label>
+  <label>
+    Fin
+    <input type="date" [(ngModel)]="fin" name="fin" required />
+  </label>
+  <button type="submit">Actualizar</button>
+</form>
+
+<!-- ETAPA 1: Totales -->
+<section *ngIf="etapa==='totales'" class="report-section">
+  <h3>Totales</h3>
+  <ul>
+    <li>Viajes: {{ totales.totalViajes }}</li>
+    <li>Horas totales: {{ totales.totalHoras | number:'1.1-1' }} h</li>
+    <li>Kilómetros totales: {{ totales.totalKm   | number:'1.0-0' }} km</li>
+  </ul>
+  <div class="buttons">
+    <button (click)="verSubtotales('viajes')">Subtotales viajes</button>
+    <button (click)="verSubtotales('horas')">Subtotales horas</button>
+    <button (click)="verSubtotales('km')">Subtotales km</button>
+  </div>
+</section>
+<!-- ETAPA 2: Subtotales -->
+<section *ngIf="etapa==='subtotales'" class="report-section">
+  <h3>Subtotales ({{ tipoSeleccionado }})</h3>
+
+  <h4>Conductores</h4>
+  <ul>
+    <li *ngFor="let c of subtotales.conductores">
+      {{ c.conductor.nombre }}:
+      {{ c.valor | number:(tipoSeleccionado==='horas'?'1.1-1':'1.0-0') }}
+      <button (click)="verDetalles('conductor', c.conductor._id!)">Detalles</button>
+    </li>
+  </ul>
+
+  <h4>Taxis</h4>
+  <ul>
+    <li *ngFor="let t of subtotales.taxis">
+      {{ t.taxi.matricula }}:
+      {{ t.valor | number:(tipoSeleccionado==='horas'?'1.1-1':'1.0-0') }}
+      <button (click)="verDetalles('taxi', t.taxi._id!)">Detalles</button>
+    </li>
+  </ul>
+
+  <button (click)="cargarTotales()">Volver a totales</button>
+</section>
+
+<!-- ETAPA 3: Detalles -->
+<section *ngIf="etapa==='detalles'" class="report-section">
+  <h3>Detalles de {{ entidadSeleccionada }} ({{ tipoSeleccionado }})</h3>
+  <ul>
+    <li *ngFor="let d of detalles">
+      <div [ngSwitch]="tipoSeleccionado">
+        <div>
+          <div>
+              <strong>Inicio:</strong> {{ d.inicio | date:'dd/MM/yyyy HH:mm' }}
+            </div>
+          <div>
+            <strong>Fin:</strong>   {{ d.fin    | date:'dd/MM/yyyy HH:mm' }}
+          </div>
+        </div>
+        <div *ngSwitchCase="'horas'">
+          <div>
+            <strong>Duración:</strong> {{ d.horas | number:'1.2-2' }} h
+          </div>
+        </div>
+        <div *ngSwitchCase="'km'">
+          <div>
+            <strong>Distancia:</strong> {{ d.km| number:'1.2-2' }} km
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+    <button  (click)="verSubtotales(tipoSeleccionado)">
+    Volver a subtotales
+    </button>
+</section>
