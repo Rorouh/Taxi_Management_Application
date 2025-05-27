@@ -12,15 +12,18 @@ const api = require('./routes/api');
 var app = express();
 
 const mongoose = require('mongoose');
-const mongo = "mongodb+srv://alejandroldz2004:VT2Joeb4EcBTTpll@cluster0.c4mfrko.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
-mongoose.connect(mongo)
-.then(() => {
-  console.log('Connected to MongoDB');
-})
-.catch((error) => {
-  console.error('Error connecting to MongoDB:', error);
-});
 
+// URI de la Facultad (Mongo corriendo local en el servidor, puerto 27017)
+const defaultUri = 'mongodb://PSI046:PSI046@localhost:27017/PSI046?retryWrites=true&authSource=PSI046';
+
+// Permitimos sobreescribir vía env var MONGO_URI
+const mongoUri = process.env.MONGO_URI || defaultUri;
+
+mongoose.connect(mongoUri)
+  .then(() => console.log('✅ Conectado a la BD de la Facultad'))
+  .catch(err => console.error('❌ Error conectando a la BD:', err));
+
+  
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
