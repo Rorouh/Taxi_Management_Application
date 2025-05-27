@@ -13,7 +13,7 @@ export class EsperarPedidoComponent  implements OnInit{
   pedido: Pedido = {} as Pedido;
   viaje: Viaje = {} as Viaje;
   conductorEncontrado: boolean = false;
-
+  viajeEmpezado: boolean = false;
   private poller: any;
 
   constructor(private viajeService: ViajeService,private pedidoService: PedidoService, private route: ActivatedRoute, private router: Router){}
@@ -68,6 +68,7 @@ export class EsperarPedidoComponent  implements OnInit{
     this.pedidoService.cambiarEstadoPedido(this.pedido._id || '', 'en progreso').subscribe({
       next: () => {
         this.pedido.estado = 'en progreso';
+        this.viajeEmpezado = true;
       },
       error: err => console.error(err)
     });

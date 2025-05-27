@@ -41,7 +41,7 @@ exports.cambiarEstadoPedido = async (req, res) => {
     if (!pedido) {
       return res.status(404).json({ error: 'Pedido no encontrado' });
     }
-    if(pedido.estado !== 'completado'){ //un pedido completado no puede cambiar de estado
+    if(pedido.estado !== 'completado' && pedido.estado !== 'en progreso'){ //un pedido completado no puede cambiar de estado
       pedido.estado = req.body.estado;
       await pedido.save();
     }

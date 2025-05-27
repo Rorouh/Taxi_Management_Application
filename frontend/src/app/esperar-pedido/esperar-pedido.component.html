@@ -1,6 +1,6 @@
 <!-- esperar-pedido.component.html -->
-<div>
-  <h2>Buscando conductor…</h2>
+<div *ngIf="!viajeEmpezado">
+  <h2>Buscando conductor… </h2>
 
   <ul>
     <li>Origen: {{ pedido.origen.calle }} {{ pedido.origen.numero }}, {{ pedido.origen.localidad }}</li>
@@ -14,7 +14,7 @@
 </div>
 
 <!-- solo cuando llega el conductor -->
-<div *ngIf="conductorEncontrado && viaje">
+<div *ngIf="conductorEncontrado && viaje && !viajeEmpezado">
   <h2>Conductor disponible</h2>
   <ul>
     <li>Conductor: {{ viaje.turno.conductor.nombre }}</li>
@@ -25,5 +25,16 @@
   </ul>
 
   <button class="aceptar" (click)="aceptarPedido()">Aceptar</button>
-  <button class="cancelar" (click)="cancelarPedido()">Rechazar</button>
+  <button class="cancelar" (click)="cancelarPedido()">Rechazar </button>
+</div>
+
+<div *ngIf="viajeEmpezado">
+  <h2>Buen Viaje!</h2>
+  <ul>
+    <li>Origen: {{ viaje.pedido.origen.calle }} {{ viaje.pedido.origen.numero }}, {{ viaje.pedido.origen.localidad }}</li>
+    <li>Destino: {{ viaje.pedido.destino.calle }} {{ viaje.pedido.destino.numero }}, {{ viaje.pedido.destino.localidad }}</li>
+    <li>Distancia al conductor: {{ viaje.distanciaCliente }} km</li>
+    <li>Recorrido: {{ viaje.pedido.distancia }} km</li>
+    <li>Tiempo estimado: {{ viaje.tiempoTotal }} min</li>
+  </ul>
 </div>
